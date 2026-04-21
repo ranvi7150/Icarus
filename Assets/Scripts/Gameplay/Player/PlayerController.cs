@@ -1,3 +1,4 @@
+﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,21 +14,34 @@ namespace Icarus.Gameplay.Player
         [Header("Ground Check")]
         [SerializeField] private Collider2D feetCollider;
         [SerializeField] private LayerMask groundLayers = ~0;
+        [SerializeField] private float groundCheckCastDistance = 0.05f;
 
         [Header("Jump Detail")]
         [SerializeField] private float coyoteTime = 0.12f;
         [SerializeField] private float jumpBufferTime = 0.12f;
 
         [Header("Jump Multiplier")]
-        [SerializeField] private float jumpSpeedMultiplier = 1.3f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float lowJumpMultiplier = 2f;
 
+        [Header("Dash")]
+        [SerializeField] private float dashSpeed = 14f;
+        [SerializeField] private float dashDuration = 0.12f;
+        [SerializeField] private float dashCooldown = 0.4f;
+
         private Rigidbody2D _rb;
         private Vector2 _moveInput;
+
         private float _coyoteTimer;
         private float _jumpBufferTimer;
         private bool _jumpHeld;
+
+        private int _facingDirection = 1;
+        private bool _dashRequested;
+        private bool _isDashing;
+        private float _dashTimer;
+        private float _dashCooldownTimer;
+        private bool _hasAirDashed;
 
         private void Awake()
         {
@@ -37,32 +51,94 @@ namespace Icarus.Gameplay.Player
         private void Update()
         {
             UpdateJumpTimers();
+            UpdateDashTimers();
+            ResetAirDash();
         }
 
         private void FixedUpdate()
         {
+            if(TryDash()) return;   //NO Move, Jump, Gravity during Dash
             Move();
             Jump();
             ApplyGravity();
         }
+
+
         private void UpdateJumpTimers()
         {
-            //CoyoteTime : 착지시 초기화 -> 지면에서 벗어나더라도 coyoteTime동안은 점프가능
-            //JumpBuffer : 점프버튼 다운시 초기화 -> 착지하기 전이라도 JumpBufferTime동안은 점프 선입력
-
+            // Coyote time: allow jump for a short time after leaving ground.
             if (IsGrounded())
             {
                 _coyoteTimer = coyoteTime;
             }
             else
             {
-                _coyoteTimer -= Time.fixedDeltaTime;
+                _coyoteTimer -= Time.deltaTime;
             }
 
+            // Jump buffer: cache jump input briefly before landing.
             if (_jumpBufferTimer > 0f)
             {
-                _jumpBufferTimer -= Time.fixedDeltaTime;
+                _jumpBufferTimer -= Time.deltaTime;
             }
+        }
+
+        private void UpdateDashTimers()
+        {
+            if (_dashCooldownTimer > 0f)
+            {
+                _dashCooldownTimer -= Time.deltaTime;
+            }
+
+            if (_dashTimer > 0f)
+            {
+                _dashTimer -= Time.deltaTime;
+                if (_dashTimer <= 0f)
+                {
+                    _isDashing = false;
+                }
+            }
+        }
+
+        private void ResetAirDash()
+        {
+            if (IsGrounded())
+            {
+                _hasAirDashed = false;
+            }
+        }
+
+        private bool TryDash()
+        {
+            //Start Dash
+            if (_dashRequested && CanStartDash())
+            {
+                _dashRequested = false;
+                _isDashing = true;
+
+                _dashTimer = dashDuration;
+                _dashCooldownTimer = dashCooldown;
+
+                //Prevent Jump after Dash
+                _jumpBufferTimer = 0f;
+
+                if (!IsGrounded())
+                {
+                    _hasAirDashed = true;
+                }
+
+                _rb.linearVelocity = new Vector2(_facingDirection * dashSpeed, 0f);
+                return true;
+            }
+
+            //Dashing
+            if(_isDashing)
+            {
+                _rb.linearVelocity = new Vector2(_facingDirection * dashSpeed, 0f);
+                return true;
+            }
+
+            return false;
         }
 
         private void Move()
@@ -80,50 +156,62 @@ namespace Icarus.Gameplay.Player
             _jumpBufferTimer = 0f;
             _coyoteTimer = 0f;
 
-            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpForce * jumpSpeedMultiplier);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpForce);
         }
 
         private void ApplyGravity()
         {
-            //점프 높이 유지를 위한 중력가속도 조정 h = v^2 / 2g --> h = (v * k)^2 / 2g * k^2 
-            //k = jumpSpeedMultiplier
-            float speedGravityMultiplier = jumpSpeedMultiplier * jumpSpeedMultiplier;
-
-            if (_rb.linearVelocity.y > 0f)
+            //Apply additional gravity when ascending, if there is no jump key down x (Low Jump)
+            if (_rb.linearVelocity.y > 0f && !_jumpHeld)
             {
-                // 낮은 점프시(탭 점프) 중력가속도 수정
-                if (!_jumpHeld)
-                {
-                    float effectiveLowJumpMultiplier = lowJumpMultiplier * speedGravityMultiplier;
-                    _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (effectiveLowJumpMultiplier - 1f) * Time.fixedDeltaTime;
-                }
-                // 긴 점프시(점프 버튼 유지) 중력가속도 수정
-                else
-                {
-                    _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (speedGravityMultiplier - 1f) * Time.fixedDeltaTime;
-                }
+                _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
             }
 
+            //Apply additional gravity when descenting
             if (_rb.linearVelocity.y < 0f)
             {
-                float effectiveFallMultiplier = fallMultiplier * speedGravityMultiplier;
-                _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (effectiveFallMultiplier - 1f) * Time.fixedDeltaTime;
-                return;
+                _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
             }
         }
 
         private bool IsGrounded()
         {
-            return feetCollider != null && feetCollider.IsTouchingLayers(groundLayers);
+            if (feetCollider == null)
+            {
+                return false;
+            }
+
+            // Check ground layer by casting a feet-sized box downward.
+            Bounds feetBounds = feetCollider.bounds;
+            Vector2 castOrigin = feetBounds.center;
+            Vector2 castSize = feetBounds.size;
+            RaycastHit2D hit = Physics2D.BoxCast(castOrigin, castSize, 
+                                                0f, Vector2.down, 
+                                                groundCheckCastDistance, groundLayers);
+                                                
+            return hit.collider != null;
         }
 
+        private void UpdateFacingDirection()
+        {
+            //Modify facingDirection to Left/Right
+            if (Mathf.Abs(_moveInput.x) > 0.01f)
+            {
+                _facingDirection = _moveInput.x > 0f ? 1 : -1;
+            }
+        }
 
+        private bool CanStartDash()
+        {
+            return !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
+        }
 
         /* Player Control Event */
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
             _moveInput = ctx.ReadValue<Vector2>();
+            UpdateFacingDirection();
         }
 
         public void OnJump(InputAction.CallbackContext ctx)
@@ -140,6 +228,13 @@ namespace Icarus.Gameplay.Player
             }
         }
 
+        public void OnDash(InputAction.CallbackContext ctx)
+        {
+            if (ctx.started || ctx.performed)
+            {
+                _dashRequested = true;
+            }
+        }
 
         /* Gizmos */
 
@@ -148,10 +243,11 @@ namespace Icarus.Gameplay.Player
             if (feetCollider != null)
             {
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(feetCollider.bounds.center, feetCollider.bounds.size);
+                Gizmos.DrawWireCube(
+                    feetCollider.bounds.center + Vector3.down * groundCheckCastDistance,
+                    feetCollider.bounds.size
+                );
             }
         }
-
     }
 }
-

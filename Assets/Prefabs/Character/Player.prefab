@@ -118,9 +118,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3991099117505775144
 MonoBehaviour:
@@ -139,12 +139,15 @@ MonoBehaviour:
   feetCollider: {fileID: 6523727976307275901}
   groundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
+  groundCheckCastDistance: 0.05
   coyoteTime: 0.12
   jumpBufferTime: 0.12
-  jumpSpeedMultiplier: 1.3
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
+  dashSpeed: 14
+  dashDuration: 0.12
+  dashCooldown: 0.4
 --- !u!114 &449526418477418900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +207,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 3d245864-93d3-48b4-b890-7113e3a9cf04
     m_ActionName: 'Player/Jump[/Keyboard/c,/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3991099117505775144}
+        m_TargetAssemblyTypeName: Icarus.Gameplay.Player.PlayerController, Assembly-CSharp
+        m_MethodName: OnDash
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8d0a3832-0e57-491f-98f3-015548861784
+    m_ActionName: 'Player/Dash[/Keyboard/x,/Keyboard/leftShift]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PC
   m_DefaultActionMap: Player
@@ -308,7 +327,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.031939924, y: -0.45271587}
+  m_Offset: {x: -0.033855513, y: -0.44505364}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -318,7 +337,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.6240126, y: 0.119304895}
+  m_Size: {x: 0.6891428, y: 0.10398042}
   m_EdgeRadius: 0
 --- !u!1 &7399255551798267981
 GameObject:
@@ -329,7 +348,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8767768643950236007}
-  - component: {fileID: 6705706266815496794}
+  - component: {fileID: 4554649191803922262}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -352,8 +371,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8002151630523232589}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &6705706266815496794
-BoxCollider2D:
+--- !u!70 &4554649191803922262
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -386,15 +405,6 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.02890879, y: 0.044917166}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.8120928, y: 0.91016567}
-  m_EdgeRadius: 0
+  m_Offset: {x: -0.030649513, y: 0.03448057}
+  m_Size: {x: 0.80649513, y: 0.93103886}
+  m_Direction: 0
