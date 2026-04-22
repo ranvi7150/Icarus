@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Icarus.Gameplay.Player
@@ -43,6 +42,9 @@ namespace Icarus.Gameplay.Player
         private float _dashCooldownTimer;
         private bool _hasAirDashed;
 
+        private bool _isInAirFlow;
+        private Vector2 _airFlowVelocity;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -57,6 +59,12 @@ namespace Icarus.Gameplay.Player
 
         private void FixedUpdate()
         {
+            if (_isInAirFlow)
+            {
+                _rb.linearVelocity = _airFlowVelocity;
+                return;
+            }
+
             if(TryDash()) return;   //NO Move, Jump, Gravity during Dash
             Move();
             Jump();
@@ -120,7 +128,7 @@ namespace Icarus.Gameplay.Player
                 _dashCooldownTimer = dashCooldown;
 
                 //Prevent Jump after Dash
-                _jumpBufferTimer = 0f;
+                ClearJumpStatus(clearJumpHold: false, clearCoyoteTimer: false);
 
                 if (!IsGrounded())
                 {
@@ -153,8 +161,7 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
-            _jumpBufferTimer = 0f;
-            _coyoteTimer = 0f;
+            ClearJumpStatus(clearJumpHold: false, clearCoyoteTimer: true);
 
             _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpForce);
         }
@@ -185,16 +192,16 @@ namespace Icarus.Gameplay.Player
             Bounds feetBounds = feetCollider.bounds;
             Vector2 castOrigin = feetBounds.center;
             Vector2 castSize = feetBounds.size;
-            RaycastHit2D hit = Physics2D.BoxCast(castOrigin, castSize, 
-                                                0f, Vector2.down, 
+            RaycastHit2D hit = Physics2D.BoxCast(castOrigin, castSize,
+                                                0f, Vector2.down,
                                                 groundCheckCastDistance, groundLayers);
-                                                
+
             return hit.collider != null;
         }
 
         private void UpdateFacingDirection()
         {
-            //Modify facingDirection to Left/Right
+            // Modify facingDirection to Left or Right
             if (Mathf.Abs(_moveInput.x) > 0.01f)
             {
                 _facingDirection = _moveInput.x > 0f ? 1 : -1;
@@ -205,6 +212,43 @@ namespace Icarus.Gameplay.Player
         {
             return !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
         }
+
+        private void ClearDashStatus()
+        {
+            _isDashing = false;
+            _dashRequested = false;
+        }
+
+        private void ClearJumpStatus(bool clearJumpHold, bool clearCoyoteTimer)
+        {
+            _jumpBufferTimer = 0f;
+
+            if (clearJumpHold)
+            {
+                _jumpHeld = false;
+            }
+
+            if (clearCoyoteTimer)
+            {
+                _coyoteTimer = 0f;
+            }
+        }
+
+
+        public void SetAirFlowVelocity(Vector2 velocity)
+        {
+            _isInAirFlow = true;
+            _airFlowVelocity = velocity;
+            ClearDashStatus();
+            ClearJumpStatus(clearJumpHold: true, clearCoyoteTimer: true);
+        }
+
+        public void ClearAirFlowVelocity()
+        {
+            _isInAirFlow = false;
+        }
+
+
 
         /* Player Control Event */
 
@@ -240,14 +284,17 @@ namespace Icarus.Gameplay.Player
 
         private void OnDrawGizmos()
         {
-            if (feetCollider != null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(
-                    feetCollider.bounds.center + Vector3.down * groundCheckCastDistance,
-                    feetCollider.bounds.size
-                );
-            }
+            if (feetCollider != null) DrawFeetColliderGizmo();
         }
+
+        private void DrawFeetColliderGizmo()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(
+                feetCollider.bounds.center + Vector3.down * groundCheckCastDistance,
+                feetCollider.bounds.size
+            );
+        }
+
     }
 }
