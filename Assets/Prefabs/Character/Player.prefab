@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2676149186809048713}
   - component: {fileID: 3459562422870868698}
   - component: {fileID: 1451310769469170463}
-  - component: {fileID: 3991099117505775144}
   - component: {fileID: 449526418477418900}
+  - component: {fileID: 662686091008000194}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -110,7 +110,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -122,32 +122,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &3991099117505775144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1279476716120110247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981026b094ec1c249878a10676af4c9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.PlayerController.PlayerController
-  moveSpeed: 5
-  jumpForce: 7.5
-  feetCollider: {fileID: 6523727976307275901}
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheckCastDistance: 0.05
-  coyoteTime: 0.12
-  jumpBufferTime: 0.12
-  fallMultiplier: 2.5
-  lowJumpMultiplier: 2
-  dashSpeed: 14
-  dashDuration: 0.12
-  dashCooldown: 0.4
 --- !u!114 &449526418477418900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,9 +149,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3991099117505775144}
-        m_TargetAssemblyTypeName: Icarus.Gameplay.PlayerController.PlayerController,
-          Assembly-CSharp
+      - m_Target: {fileID: 662686091008000194}
+        m_TargetAssemblyTypeName: Icarus.Gameplay.Player.PlayerController, Assembly-CSharp
         m_MethodName: OnMove
         m_Mode: 0
         m_Arguments:
@@ -192,9 +165,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3991099117505775144}
-        m_TargetAssemblyTypeName: Icarus.Gameplay.PlayerController.PlayerController,
-          Assembly-CSharp
+      - m_Target: {fileID: 662686091008000194}
+        m_TargetAssemblyTypeName: Icarus.Gameplay.Player.PlayerController, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
         m_Arguments:
@@ -209,7 +181,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Jump[/Keyboard/c,/Keyboard/space]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3991099117505775144}
+      - m_Target: {fileID: 662686091008000194}
         m_TargetAssemblyTypeName: Icarus.Gameplay.Player.PlayerController, Assembly-CSharp
         m_MethodName: OnDash
         m_Mode: 0
@@ -228,6 +200,35 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &662686091008000194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279476716120110247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 981026b094ec1c249878a10676af4c9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.PlayerController
+  moveSpeed: 5
+  jumpForce: 8.5
+  feetCollider: {fileID: 6523727976307275901}
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckCastDistance: 0.05
+  coyoteTime: 0.12
+  jumpBufferTime: 0.12
+  riseGravityMultiplier: 2.2
+  lowJumpMultiplier: 4.2
+  fallMultiplier: 3.4
+  maxFallSpeed: 18
+  dashSpeed: 14
+  dashDuration: 0.12
+  dashCooldown: 0.4
+  airFlowCarryDecay: 18
 --- !u!1 &3979086073902315844
 GameObject:
   m_ObjectHideFlags: 0

@@ -92,7 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8448c0fe1f7d83c498133f6c6c4eaee5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Wind.WindZone
-  flowSpeed: 6
+  maxFlowSpeed: 15
+  flowAcceleration: 8
   airFlowCollider: {fileID: 2817261655977121169}
 --- !u!1 &8896700921745566383
 GameObject:

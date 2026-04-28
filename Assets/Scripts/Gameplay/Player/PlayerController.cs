@@ -6,9 +6,11 @@ namespace Icarus.Gameplay.Player
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerController : MonoBehaviour
     {
+        private const float VelocityEpsilonSqr = 0.0001f;
+
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 5f;
-        [SerializeField] private float jumpForce = 8.5f;
+        [SerializeField] private float jumpForce = 11.5f;
 
         [Header("Ground Check")]
         [SerializeField] private Collider2D feetCollider;
@@ -20,13 +22,18 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private float jumpBufferTime = 0.12f;
 
         [Header("Jump Multiplier")]
-        [SerializeField] private float fallMultiplier = 2.5f;
-        [SerializeField] private float lowJumpMultiplier = 2f;
+        [SerializeField] private float riseGravityMultiplier = 2.2f;
+        [SerializeField] private float lowJumpMultiplier = 4.2f;
+        [SerializeField] private float fallMultiplier = 3.4f;
+        [SerializeField] private float maxFallSpeed = 18f;
 
         [Header("Dash")]
         [SerializeField] private float dashSpeed = 14f;
         [SerializeField] private float dashDuration = 0.12f;
         [SerializeField] private float dashCooldown = 0.4f;
+
+        [Header("Air Flow")]
+        [SerializeField] private float airFlowCarryDecay = 18f;
 
         private Rigidbody2D _rb;
         private Vector2 _moveInput;
@@ -44,10 +51,17 @@ namespace Icarus.Gameplay.Player
 
         private bool _isInAirFlow;
         private Vector2 _airFlowVelocity;
+        private Vector2 _airFlowCarryVelocity;
+        private Vector2 _motorVelocity;
+
+        // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
+        // totalTargetVelocity = _motorVelocity + airFlowCarry
+        // Delta V = totalTargetVelocity - _rb.linearVelocity
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
+            _motorVelocity = _rb.linearVelocity;
         }
 
         private void Update()
@@ -61,16 +75,35 @@ namespace Icarus.Gameplay.Player
         {
             if (_isInAirFlow)
             {
-                _rb.linearVelocity = _airFlowVelocity;
+                SyncAirFlowState();
+
+                ApplyTargetVelocity(GetTotalTargetVelocity());
                 return;
             }
 
-            if(TryDash()) return;   //NO Move, Jump, Gravity during Dash
+            // During dash, skip normal move/jump/gravity logic,
+            // Keep decaying residual AirFlow carry to prevent a pop when dash ends.
+            if (TryDash())
+            {
+                ApplyTargetVelocity(GetTotalTargetVelocity());
+
+                DecayAirFlowCarry();
+                return;   
+            }
+
+            if (IsGrounded() && _motorVelocity.y < 0f)
+            {
+                _motorVelocity.y = 0f;
+            }
+
             Move();
             Jump();
             ApplyGravity();
-        }
 
+            ApplyTargetVelocity(GetTotalTargetVelocity());
+
+            DecayAirFlowCarry();
+        }
 
         private void UpdateJumpTimers()
         {
@@ -118,7 +151,7 @@ namespace Icarus.Gameplay.Player
 
         private bool TryDash()
         {
-            //Start Dash
+            // Start dash.
             if (_dashRequested && CanStartDash())
             {
                 _dashRequested = false;
@@ -127,31 +160,36 @@ namespace Icarus.Gameplay.Player
                 _dashTimer = dashDuration;
                 _dashCooldownTimer = dashCooldown;
 
-                //Prevent Jump after Dash
-                ClearJumpStatus(clearJumpHold: false, clearCoyoteTimer: false);
+                // Prevent jump buffer from auto-firing right after dash.
+                ResetJumpState(clearJumpHold: false, clearCoyoteTimer: false);
 
                 if (!IsGrounded())
                 {
                     _hasAirDashed = true;
                 }
 
-                _rb.linearVelocity = new Vector2(_facingDirection * dashSpeed, 0f);
+                SetDashVelocity();
                 return true;
             }
 
-            //Dashing
-            if(_isDashing)
+            // Continue dash.
+            if (_isDashing)
             {
-                _rb.linearVelocity = new Vector2(_facingDirection * dashSpeed, 0f);
+                SetDashVelocity();
                 return true;
             }
 
             return false;
         }
 
+        private void SetDashVelocity()
+        {
+            _motorVelocity = new Vector2(_facingDirection * dashSpeed, 0f);
+        }
+
         private void Move()
         {
-            _rb.linearVelocity = new Vector2(_moveInput.x * moveSpeed, _rb.linearVelocity.y);
+            _motorVelocity.x = _moveInput.x * moveSpeed;
         }
 
         private void Jump()
@@ -161,24 +199,74 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
-            ClearJumpStatus(clearJumpHold: false, clearCoyoteTimer: true);
+            ResetJumpState(clearJumpHold: false, clearCoyoteTimer: true);
 
-            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpForce);
+            _motorVelocity.y = jumpForce;
         }
 
         private void ApplyGravity()
         {
-            //Apply additional gravity when ascending, if there is no jump key down x (Low Jump)
-            if (_rb.linearVelocity.y > 0f && !_jumpHeld)
+            float gravityScale;
+
+            // Separate upward gravity while holding jump to avoid floaty hang-time.
+            if (_motorVelocity.y > 0f)
             {
-                _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
+                gravityScale = _jumpHeld ? riseGravityMultiplier : lowJumpMultiplier;
+            }
+            else
+            {
+                gravityScale = fallMultiplier;
             }
 
-            //Apply additional gravity when descenting
-            if (_rb.linearVelocity.y < 0f)
+            _motorVelocity += Vector2.up * Physics2D.gravity.y * gravityScale * Time.fixedDeltaTime;
+            _motorVelocity.y = Mathf.Max(_motorVelocity.y, -maxFallSpeed);
+        }
+
+        private void SyncAirFlowState()
+        {
+            _airFlowCarryVelocity = _airFlowVelocity;
+
+            // Clear motor velocity so stale move/jump/dash values do not leak after zone exit.
+            _motorVelocity = Vector2.zero;
+        }
+
+        private Vector2 GetTotalTargetVelocity()
+        {
+            if (_isInAirFlow)
             {
-                _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
+                return _airFlowVelocity;
             }
+
+            if (_airFlowCarryVelocity.sqrMagnitude <= VelocityEpsilonSqr)
+            {
+                return _motorVelocity;
+            }
+
+            return _motorVelocity + _airFlowCarryVelocity;
+        }
+
+        private void DecayAirFlowCarry()
+        {
+            // Decayed carry is applied starting from the next physics step.
+            _airFlowCarryVelocity = Vector2.MoveTowards(
+                _airFlowCarryVelocity,
+                Vector2.zero,
+                airFlowCarryDecay * Time.fixedDeltaTime);
+        }
+
+        private void ApplyVelocityDeltaAsImpulse(Vector2 deltaVelocity)
+        {
+            if (deltaVelocity.sqrMagnitude <= VelocityEpsilonSqr)
+            {
+                return;
+            }
+
+            _rb.AddForce(deltaVelocity * _rb.mass, ForceMode2D.Impulse);
+        }
+
+        private void ApplyTargetVelocity(Vector2 targetVelocity)
+        {
+            ApplyVelocityDeltaAsImpulse(targetVelocity - _rb.linearVelocity);
         }
 
         private bool IsGrounded()
@@ -201,7 +289,7 @@ namespace Icarus.Gameplay.Player
 
         private void UpdateFacingDirection()
         {
-            // Modify facingDirection to Left or Right
+            // Update facing direction from horizontal input.
             if (Mathf.Abs(_moveInput.x) > 0.01f)
             {
                 _facingDirection = _moveInput.x > 0f ? 1 : -1;
@@ -213,13 +301,13 @@ namespace Icarus.Gameplay.Player
             return !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
         }
 
-        private void ClearDashStatus()
+        private void ResetDashState()
         {
             _isDashing = false;
             _dashRequested = false;
         }
 
-        private void ClearJumpStatus(bool clearJumpHold, bool clearCoyoteTimer)
+        private void ResetJumpState(bool clearJumpHold, bool clearCoyoteTimer)
         {
             _jumpBufferTimer = 0f;
 
@@ -239,17 +327,18 @@ namespace Icarus.Gameplay.Player
         {
             _isInAirFlow = true;
             _airFlowVelocity = velocity;
-            ClearDashStatus();
-            ClearJumpStatus(clearJumpHold: true, clearCoyoteTimer: true);
+            _airFlowCarryVelocity = velocity;
+            ResetDashState();
+            ResetJumpState(clearJumpHold: true, clearCoyoteTimer: true);
         }
 
         public void ClearAirFlowVelocity()
         {
             _isInAirFlow = false;
+            _motorVelocity = Vector2.zero;
         }
 
-
-
+        
         /* Player Control Event */
 
         public void OnMove(InputAction.CallbackContext ctx)
