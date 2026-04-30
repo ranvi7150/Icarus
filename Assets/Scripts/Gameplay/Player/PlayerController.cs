@@ -34,6 +34,9 @@ namespace Icarus.Gameplay.Player
 
         [Header("Air Flow")]
         [SerializeField] private float airFlowCarryDecay = 18f;
+        
+        [Header("Wing")]
+        [SerializeField] private Wing wing;
 
         private Rigidbody2D _rb;
         private Vector2 _moveInput;
@@ -60,8 +63,25 @@ namespace Icarus.Gameplay.Player
 
         private void Awake()
         {
-            _rb = GetComponent<Rigidbody2D>();
+            _rb = GetComponent<Rigidbody2D>(); 
             _motorVelocity = _rb.linearVelocity;
+            wing = GetComponentInChildren<Wing>();
+        }
+
+        private void OnEnable()
+        {
+            if (wing != null)
+            {
+                wing.WingStateChanged += HandleWingStateChanged;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (wing != null)
+            {
+                wing.WingStateChanged -= HandleWingStateChanged;
+            }
         }
 
         private void Update()
@@ -73,6 +93,11 @@ namespace Icarus.Gameplay.Player
 
         private void FixedUpdate()
         {
+            if (_isInAirFlow && !CanUseAirFlow())
+            {
+                ForceExitAirFlow(clearCarry: true);
+            }
+
             if (_isInAirFlow)
             {
                 SyncAirFlowState();
@@ -151,6 +176,12 @@ namespace Icarus.Gameplay.Player
 
         private bool TryDash()
         {
+            if (!CanDash())
+            {
+                ResetDashState();
+                return false;
+            }
+
             // Start dash.
             if (_dashRequested && CanStartDash())
             {
@@ -215,11 +246,12 @@ namespace Icarus.Gameplay.Player
             }
             else
             {
-                gravityScale = fallMultiplier;
+                gravityScale = CanGlide() && !IsGrounded() ? wing.GlideFallGravityMultiplier : fallMultiplier;
             }
 
             _motorVelocity += Vector2.up * Physics2D.gravity.y * gravityScale * Time.fixedDeltaTime;
-            _motorVelocity.y = Mathf.Max(_motorVelocity.y, -maxFallSpeed);
+            float appliedMaxFallSpeed = CanGlide() && !IsGrounded() ? wing.GlideMaxFallSpeed : maxFallSpeed;
+            _motorVelocity.y = Mathf.Max(_motorVelocity.y, -appliedMaxFallSpeed);
         }
 
         private void SyncAirFlowState()
@@ -298,7 +330,7 @@ namespace Icarus.Gameplay.Player
 
         private bool CanStartDash()
         {
-            return !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
+            return CanDash() && !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
         }
 
         private void ResetDashState()
@@ -325,6 +357,11 @@ namespace Icarus.Gameplay.Player
 
         public void SetAirFlowVelocity(Vector2 velocity)
         {
+            if (!CanUseAirFlow())
+            {
+                return;
+            }
+
             _isInAirFlow = true;
             _airFlowVelocity = velocity;
             _airFlowCarryVelocity = velocity;
@@ -334,8 +371,59 @@ namespace Icarus.Gameplay.Player
 
         public void ClearAirFlowVelocity()
         {
+            if (!_isInAirFlow)
+            {
+                return;
+            }
+
             _isInAirFlow = false;
-            _motorVelocity = Vector2.zero;
+            _airFlowVelocity = Vector2.zero;
+            _motorVelocity = _rb.linearVelocity;
+        }
+
+        private bool CanDash()
+        {
+            return wing == null || wing.CanDash;
+        }
+
+        private bool CanUseAirFlow()
+        {
+            return wing == null || wing.CanUseAirFlow;
+        }
+
+        private bool CanGlide()
+        {
+            return wing != null && wing.CanGlide;
+        }
+
+        private void HandleWingStateChanged(bool isWingOn)
+        {
+            if (isWingOn)
+            {
+                ResetDashState();
+                return;
+            }
+
+            ResetDashState();
+            ForceExitAirFlow(clearCarry: true);
+        }
+
+        private void ForceExitAirFlow(bool clearCarry)
+        {
+            bool wasInAirFlow = _isInAirFlow;
+
+            _isInAirFlow = false;
+            _airFlowVelocity = Vector2.zero;
+
+            if (clearCarry)
+            {
+                _airFlowCarryVelocity = Vector2.zero;
+            }
+
+            if (wasInAirFlow)
+            {
+                _motorVelocity = _rb.linearVelocity;
+            }
         }
 
         
@@ -363,9 +451,17 @@ namespace Icarus.Gameplay.Player
 
         public void OnDash(InputAction.CallbackContext ctx)
         {
-            if (ctx.started || ctx.performed)
+            if ((ctx.started || ctx.performed) && CanDash())
             {
                 _dashRequested = true;
+            }
+        }
+
+        public void OnWingToggle(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed && wing != null)
+            {
+                wing.ToggleWing();
             }
         }
 
