@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Icarus.Gameplay.Interaction;
 
 namespace Icarus.Gameplay.Player
 {
@@ -16,6 +17,9 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private Collider2D feetCollider;
         [SerializeField] private LayerMask groundLayers = ~0;
         [SerializeField] private float groundCheckCastDistance = 0.05f;
+
+        [Header("Interaction")]
+        [SerializeField] private Collider2D interactionCollider;
 
         [Header("Jump Detail")]
         [SerializeField] private float coyoteTime = 0.12f;
@@ -56,6 +60,8 @@ namespace Icarus.Gameplay.Player
         private Vector2 _airFlowVelocity;
         private Vector2 _airFlowCarryVelocity;
         private Vector2 _motorVelocity;
+        
+        private IInteractable _currentInteractable;
 
         // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
         // totalTargetVelocity = _motorVelocity + airFlowCarry
@@ -82,6 +88,13 @@ namespace Icarus.Gameplay.Player
             {
                 wing.WingStateChanged -= HandleWingStateChanged;
             }
+
+            if (_currentInteractable is IInteractionPromptTarget promptTarget)
+            {
+                promptTarget.SetInteractionPromptVisible(false);
+            }
+
+            _currentInteractable = null;
         }
 
         private void Update()
@@ -426,7 +439,63 @@ namespace Icarus.Gameplay.Player
             }
         }
 
-        
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!IsInteractionTouching(other))
+            {
+                return;
+            }
+
+            IInteractable interactable = other.GetComponentInParent<IInteractable>();
+            if (interactable == null)
+            {
+                return;
+            }
+
+            _currentInteractable = interactable;
+
+            if (interactable is IInteractionPromptTarget promptTarget)
+            {
+                promptTarget.SetInteractionPromptVisible(true);
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            IInteractable interactable = other.GetComponentInParent<IInteractable>();
+            if (interactable == null)
+            {
+                return;
+            }
+
+            if (_currentInteractable == interactable)
+            {
+                // Ignore exits from non-interaction colliders while the interaction collider is still touching.
+                if (IsInteractionTouching(other))
+                {
+                    return;
+                }
+
+                if (interactable is IInteractionPromptTarget promptTarget)
+                {
+                    promptTarget.SetInteractionPromptVisible(false);
+                }
+
+                _currentInteractable = null;
+            }
+        }
+
+        private bool IsInteractionTouching(Collider2D other)
+        {
+            if (interactionCollider == null)
+            {
+                return false;
+            }
+
+            return interactionCollider.IsTouching(other);
+        }
+
+
         /* Player Control Event */
 
         public void OnMove(InputAction.CallbackContext ctx)
@@ -464,6 +533,23 @@ namespace Icarus.Gameplay.Player
                 wing.ToggleWing();
             }
         }
+
+        public void OnInteract(InputAction.CallbackContext ctx)
+        {
+            if (!ctx.performed)
+            {
+                return;
+            }
+
+            if (_currentInteractable == null)
+            {
+                return;
+            }
+
+            _currentInteractable.Interact();
+        }
+
+
 
         /* Gizmos */
 
