@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &95116241967530375
+--- !u!1 &78979995449920976
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,39 +8,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 485246095133943371}
-  - component: {fileID: 2817261655977121169}
-  - component: {fileID: 7691179333127783736}
+  - component: {fileID: 95335322905681709}
+  - component: {fileID: 6394220005175723898}
+  - component: {fileID: 923628575243021578}
   m_Layer: 0
-  m_Name: AirFlowZone
+  m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &485246095133943371
+--- !u!4 &95335322905681709
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95116241967530375}
+  m_GameObject: {fileID: 78979995449920976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.86, y: 6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -5.8, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 963662327616621760}
+  - {fileID: 1588854609916019467}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &2817261655977121169
+--- !u!61 &6394220005175723898
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95116241967530375}
+  m_GameObject: {fileID: 78979995449920976}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -64,41 +64,38 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 6, y: 10}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &7691179333127783736
+--- !u!114 &923628575243021578
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95116241967530375}
+  m_GameObject: {fileID: 78979995449920976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8448c0fe1f7d83c498133f6c6c4eaee5, type: 3}
+  m_Script: {fileID: 11500000, guid: 4082f637a816033439ab8f2a360640c4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Wind.WindZone
-  maxFlowSpeed: 15
-  flowAcceleration: 8
+  m_EditorClassIdentifier: Assembly-CSharp::Door
   startActivated: 1
-  activateMode: 0
-  airFlowCollider: {fileID: 2817261655977121169}
-  visualTarget: {fileID: 8896700921745566383}
---- !u!1 &8896700921745566383
+  controlledCollider: {fileID: 6394220005175723898}
+  visualTarget: {fileID: 2963913164427806905}
+--- !u!1 &2963913164427806905
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,38 +103,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 963662327616621760}
-  - component: {fileID: 4703577720030572561}
+  - component: {fileID: 1588854609916019467}
+  - component: {fileID: 6427886557461216347}
   m_Layer: 0
-  m_Name: DirectionArrow
+  m_Name: DoorVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &963662327616621760
+--- !u!4 &1588854609916019467
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8896700921745566383}
+  m_GameObject: {fileID: 2963913164427806905}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 485246095133943371}
+  m_Father: {fileID: 95335322905681709}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4703577720030572561
+--- !u!212 &6427886557461216347
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8896700921745566383}
+  m_GameObject: {fileID: 2963913164427806905}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -179,12 +176,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7635563162873571100, guid: 6270505265ffb2f489137ebfbe6cff1e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 6, y: 4.57}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

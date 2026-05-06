@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &5887653404344062671
+--- !u!1001 &4358053329673899372
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,32 +10,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4945165271882216, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
       propertyPath: m_Name
-      value: AirFlowZoneSwitch
+      value: DoorSwitch
       objectReference: {fileID: 0}
     - target: {fileID: 393013941527259204, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
       propertyPath: interactionPrompt
       value: 
-      objectReference: {fileID: 2347167096045517981}
-    - target: {fileID: 393013941527259204, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: activationTargets.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2295314955650053808, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 2295314955650053808, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2295314955650053808, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2295314955650053808, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5574647045809038142}
     - target: {fileID: 2301164007322170941, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -76,26 +56,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7078042485791938556, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.01
+    - target: {fileID: 8560205643941928709, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7078042485791938556, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.01
+    - target: {fileID: 8560205643941928709, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
+      propertyPath: m_Color.g
+      value: 0.2034893
       objectReference: {fileID: 0}
-    - target: {fileID: 7078042485791938556, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.01
+    - target: {fileID: 8560205643941928709, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
+    - {fileID: 1283034407187162235, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
     - {fileID: 898624634199125424, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
---- !u!1 &2347167096045517981 stripped
+--- !u!1 &5574647045809038142 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8153755692198211154, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
-  m_PrefabInstance: {fileID: 5887653404344062671}
+  m_PrefabInstance: {fileID: 4358053329673899372}
   m_PrefabAsset: {fileID: 0}

@@ -18,22 +18,26 @@ namespace Icarus.Gameplay.AirFlow
         [SerializeField] private float flowAcceleration = 30f;
         [SerializeField] private bool startActivated = true;
         [SerializeField] private ActivateMode activateMode = ActivateMode.ToggleActivation;
-
-        [Header("Gizmo")]
         [SerializeField] private BoxCollider2D airFlowCollider;
+        [SerializeField] private GameObject visualTarget;
 
         // Prefab default flow is +X. Actual world flow comes from zone rotation.
         public Vector2 AirFlowDirection => ((Vector2)transform.right).normalized;
 
         private Vector2 _currentFlowVelocity;
         private bool _hasCurrentFlowVelocity;
+        private bool _isActivated;
 
         private void Awake()
         {
-            if (!startActivated)
+            if (airFlowCollider == null)
             {
-                gameObject.SetActive(false);
+                airFlowCollider = GetComponent<BoxCollider2D>();
             }
+
+            // Force initial application to collider/visual state.
+            _isActivated = !startActivated;
+            SetActivated(startActivated);
         }
 
         private void OnDisable()
@@ -44,6 +48,11 @@ namespace Icarus.Gameplay.AirFlow
 
         private void OnTriggerStay2D(Collider2D other)
         {
+            if (!_isActivated)
+            {
+                return;
+            }
+
             if (!TryGetPlayerController(other, out PlayerController player))
             {
                 return;
@@ -80,7 +89,44 @@ namespace Icarus.Gameplay.AirFlow
                 return;
             }
 
-            gameObject.SetActive(!gameObject.activeSelf);
+            SetActivated(!_isActivated);
+        }
+
+        private void SetActivated(bool isActivated)
+        {
+            if (_isActivated == isActivated)
+            {
+                return;
+            }
+
+            _isActivated = isActivated;
+            SetColliderState(_isActivated);
+            SetVisualState(_isActivated);
+
+            if (!_isActivated)
+            {
+                ResetFlowState();
+            }
+        }
+
+        private void SetColliderState(bool isEnabled)
+        {
+            if (airFlowCollider == null)
+            {
+                return;
+            }
+
+            airFlowCollider.enabled = isEnabled;
+        }
+        
+        private void SetVisualState(bool isVisible)
+        {
+            if (visualTarget == null)
+            {
+                return;
+            }
+
+            visualTarget.SetActive(isVisible);
         }
 
         private void ReverseFlowDirection()
