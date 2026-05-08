@@ -12,11 +12,13 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private float glideFallGravityMultiplier = 1.1f;
         [SerializeField] private float glideMaxFallSpeed = 6f;
 
+        private PlayerStats _playerStats;
         private bool isWingOn;
+        private float _remainingGlideDuration;
 
         public bool CanDash => !isWingOn;
-        public bool CanUseAirFlow => isWingOn;
-        public bool CanGlide => isWingOn;
+        public bool CanGlide => isWingOn && _remainingGlideDuration > 0f;
+        public bool CanUseAirFlow => CanGlide;
         public float GlideFallGravityMultiplier => glideFallGravityMultiplier;
         public float GlideMaxFallSpeed => glideMaxFallSpeed;
 
@@ -24,7 +26,16 @@ namespace Icarus.Gameplay.Player
 
         private void Awake()
         {
+            _playerStats = GetComponentInParent<PlayerStats>();
+            if (_playerStats == null)
+            {
+                Debug.LogError("Wing requires a PlayerStats component in parent hierarchy.", this);
+                enabled = false;
+                return;
+            }
+
             isWingOn = false;
+            _remainingGlideDuration = GetMaxGlideDurationSeconds();
 
             if (wingVisual != null)
             {
@@ -34,11 +45,31 @@ namespace Icarus.Gameplay.Player
 
         public void ToggleWing()
         {
+            if (!CanToggleWing())
+            {
+                return;
+            }
+
+            if (!isWingOn && _remainingGlideDuration <= 0f)
+            {
+                return;
+            }
+
             SetWingState(!isWingOn);
+        }
+
+        private bool CanToggleWing()
+        {
+            return _playerStats.CanWingToggle;
         }
 
         private void SetWingState(bool isOn)
         {
+            if (isWingOn == isOn)
+            {
+                return;
+            }
+
             isWingOn = isOn;
 
             if (wingVisual != null)
@@ -47,6 +78,36 @@ namespace Icarus.Gameplay.Player
             }
 
             WingStateChanged?.Invoke(isWingOn);
+        }
+
+        public void TickGlideDuration(bool isGrounded, float deltaTime)
+        {
+            if (!CanToggleWing())
+            {
+                SetWingState(false);
+                return;
+            }
+
+            if (isGrounded)
+            {
+                _remainingGlideDuration = GetMaxGlideDurationSeconds();
+                return;
+            }
+
+            if (!isWingOn)
+            {
+                return;
+            }
+
+            _remainingGlideDuration = Mathf.Max(0f, _remainingGlideDuration - Mathf.Max(0f, deltaTime));
+            if (_remainingGlideDuration <= 0f)
+            {
+                SetWingState(false);
+            }
+        }
+        private float GetMaxGlideDurationSeconds()
+        {
+            return Mathf.Max(0.1f, _playerStats.GlideDurationSeconds);
         }
     }
 }

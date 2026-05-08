@@ -5,6 +5,7 @@ using Icarus.Gameplay.Interaction;
 namespace Icarus.Gameplay.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(PlayerStats))]
     public class PlayerController : MonoBehaviour
     {
         private const float VelocityEpsilonSqr = 0.0001f;
@@ -44,6 +45,7 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private Wing wing;
 
         private Rigidbody2D _rb;
+        private PlayerStats _playerStats;
         private Vector2 _moveInput;
 
         private float _coyoteTimer;
@@ -72,23 +74,32 @@ namespace Icarus.Gameplay.Player
         {
             _rb = GetComponent<Rigidbody2D>(); 
             _motorVelocity = _rb.linearVelocity;
+
             wing = GetComponentInChildren<Wing>();
+            if (wing == null)
+            {
+                Debug.LogError("PlayerController requires a Wing component in children.", this);
+                enabled = false;
+                return;
+            }
+
+            _playerStats = GetComponent<PlayerStats>();
+            if (_playerStats == null)
+            {
+                Debug.LogError("PlayerController requires a PlayerStats component.", this);
+                enabled = false;
+                return;
+            }
         }
 
         private void OnEnable()
         {
-            if (wing != null)
-            {
-                wing.WingStateChanged += HandleWingStateChanged;
-            }
+            wing.WingStateChanged += HandleWingStateChanged;
         }
 
         private void OnDisable()
         {
-            if (wing != null)
-            {
-                wing.WingStateChanged -= HandleWingStateChanged;
-            }
+            wing.WingStateChanged -= HandleWingStateChanged;
 
             if (_currentInteractable is IInteractionPromptTarget promptTarget)
             {
@@ -100,13 +111,18 @@ namespace Icarus.Gameplay.Player
 
         private void Update()
         {
-            UpdateJumpTimers();
+            bool isGrounded = IsGrounded();
+
+            UpdateJumpTimers(isGrounded);
             UpdateDashTimers();
-            ResetAirDash();
+            ResetAirDash(isGrounded);
         }
 
         private void FixedUpdate()
         {
+            bool isGrounded = IsGrounded();
+            UpdateWingGlideState(isGrounded);
+
             if (_isInAirFlow && !CanUseAirFlow())
             {
                 ForceExitAirFlow(clearCarry: true);
@@ -122,7 +138,7 @@ namespace Icarus.Gameplay.Player
 
             // During dash, skip normal move/jump/gravity logic,
             // Keep decaying residual AirFlow carry to prevent a pop when dash ends.
-            if (TryDash())
+            if (TryDash(isGrounded))
             {
                 ApplyTargetVelocity(GetTotalTargetVelocity());
 
@@ -130,24 +146,24 @@ namespace Icarus.Gameplay.Player
                 return;   
             }
 
-            if (IsGrounded() && _motorVelocity.y < 0f)
+            if (isGrounded && _motorVelocity.y < 0f)
             {
                 _motorVelocity.y = 0f;
             }
 
             Move();
             Jump();
-            ApplyGravity();
+            ApplyGravity(isGrounded);
 
             ApplyTargetVelocity(GetTotalTargetVelocity());
 
             DecayAirFlowCarry();
         }
 
-        private void UpdateJumpTimers()
+        private void UpdateJumpTimers(bool isGrounded)
         {
             // Coyote time: allow jump for a short time after leaving ground.
-            if (IsGrounded())
+            if (isGrounded)
             {
                 _coyoteTimer = coyoteTime;
             }
@@ -180,15 +196,15 @@ namespace Icarus.Gameplay.Player
             }
         }
 
-        private void ResetAirDash()
+        private void ResetAirDash(bool isGrounded)
         {
-            if (IsGrounded())
+            if (isGrounded)
             {
                 _hasAirDashed = false;
             }
         }
 
-        private bool TryDash()
+        private bool TryDash(bool isGrounded)
         {
             if (!CanDash())
             {
@@ -197,7 +213,7 @@ namespace Icarus.Gameplay.Player
             }
 
             // Start dash.
-            if (_dashRequested && CanStartDash())
+            if (_dashRequested && CanStartDash(isGrounded))
             {
                 _dashRequested = false;
                 _isDashing = true;
@@ -208,7 +224,7 @@ namespace Icarus.Gameplay.Player
                 // Prevent jump buffer from auto-firing right after dash.
                 ResetJumpState(clearJumpHold: false, clearCoyoteTimer: false);
 
-                if (!IsGrounded())
+                if (!isGrounded)
                 {
                     _hasAirDashed = true;
                 }
@@ -249,9 +265,10 @@ namespace Icarus.Gameplay.Player
             _motorVelocity.y = jumpForce;
         }
 
-        private void ApplyGravity()
+        private void ApplyGravity(bool isGrounded)
         {
             float gravityScale;
+            bool canGlideInAir = CanGlide() && !isGrounded;
 
             // Separate upward gravity while holding jump to avoid floaty hang-time.
             if (_motorVelocity.y > 0f)
@@ -260,11 +277,11 @@ namespace Icarus.Gameplay.Player
             }
             else
             {
-                gravityScale = CanGlide() && !IsGrounded() ? wing.GlideFallGravityMultiplier : fallMultiplier;
+                gravityScale = canGlideInAir ? wing.GlideFallGravityMultiplier : fallMultiplier;
             }
 
             _motorVelocity += Vector2.up * Physics2D.gravity.y * gravityScale * Time.fixedDeltaTime;
-            float appliedMaxFallSpeed = CanGlide() && !IsGrounded() ? wing.GlideMaxFallSpeed : maxFallSpeed;
+            float appliedMaxFallSpeed = canGlideInAir ? wing.GlideMaxFallSpeed : maxFallSpeed;
             _motorVelocity.y = Mathf.Max(_motorVelocity.y, -appliedMaxFallSpeed);
         }
 
@@ -354,9 +371,9 @@ namespace Icarus.Gameplay.Player
             }
         }
 
-        private bool CanStartDash()
+        private bool CanStartDash(bool isGrounded)
         {
-            return CanDash() && !_isDashing && _dashCooldownTimer <= 0f && (IsGrounded() || !_hasAirDashed);
+            return !_isDashing && _dashCooldownTimer <= 0f && (isGrounded || !_hasAirDashed);
         }
 
         private void ResetDashState()
@@ -409,17 +426,22 @@ namespace Icarus.Gameplay.Player
 
         private bool CanDash()
         {
-            return wing == null || wing.CanDash;
+            return _playerStats.CanDash && wing.CanDash;
         }
 
         private bool CanUseAirFlow()
         {
-            return wing == null || wing.CanUseAirFlow;
+            return wing.CanUseAirFlow;
         }
 
         private bool CanGlide()
         {
-            return wing != null && wing.CanGlide;
+            return wing.CanGlide;
+        }
+
+        private void UpdateWingGlideState(bool isGrounded)
+        {
+            wing.TickGlideDuration(isGrounded, Time.fixedDeltaTime);
         }
 
         private void HandleWingStateChanged(bool isWingOn)
@@ -533,7 +555,7 @@ namespace Icarus.Gameplay.Player
 
         public void OnDash(InputAction.CallbackContext ctx)
         {
-            if ((ctx.started || ctx.performed) && CanDash())
+            if (ctx.started || ctx.performed)
             {
                 _dashRequested = true;
             }
@@ -541,7 +563,7 @@ namespace Icarus.Gameplay.Player
 
         public void OnWingToggle(InputAction.CallbackContext ctx)
         {
-            if (ctx.performed && wing != null)
+            if (ctx.performed)
             {
                 wing.ToggleWing();
             }

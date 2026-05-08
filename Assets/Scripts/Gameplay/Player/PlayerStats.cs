@@ -1,0 +1,73 @@
+using System;
+using UnityEngine;
+
+namespace Icarus.Gameplay.Player
+{
+    public class PlayerStats : MonoBehaviour
+    {
+        [Header("Feather")]
+        [SerializeField] private Progression progression;
+        [SerializeField, Min(0)] private int startFeatherCount;
+
+        private int _featherCount;
+        private int _currentFeatherIndex = -1;
+
+        public int FeatherCount => _featherCount;
+        public int CurrentFeatherIndex => _currentFeatherIndex;
+
+        public bool CanDash => progression.IsDashUnlocked(_featherCount);
+        public bool CanWingToggle => progression.IsWingToggleUnlocked(_featherCount);
+        public bool HasGlideDurationUpgrade => progression.HasGlideDurationUpgrade(_featherCount);
+        public bool CanDoubleJump => progression.IsDoubleJumpUnlocked(_featherCount);
+        public float GlideDurationSeconds => progression.GetGlideDurationSeconds(_featherCount);
+
+        public event Action<int> FeatherCountChanged;
+        public event Action<int> FeatherIndexReached;
+
+        private void Awake()
+        {
+            if (progression == null)
+            {
+                Debug.LogError("PlayerStats requires a Progression asset reference.", this);
+                enabled = false;
+                return;
+            }
+
+            _featherCount = Mathf.Max(0, startFeatherCount);
+            RecalculateProgress(logFeatherIndexChanges: false);
+        }
+
+        public bool TryCollectFeather()
+        {
+            _featherCount += 1;
+
+            Debug.Log($"Feather picked up: +1 (current: {_featherCount})", this);
+
+            RecalculateProgress(logFeatherIndexChanges: true);
+            FeatherCountChanged?.Invoke(_featherCount);
+            return true;
+        }
+
+        private void RecalculateProgress(bool logFeatherIndexChanges)
+        {
+            int nextFeatherIndex = progression.GetReachedFeatherIndex(_featherCount);
+
+            if (logFeatherIndexChanges && nextFeatherIndex > _currentFeatherIndex)
+            {
+                for (int i = _currentFeatherIndex + 1; i <= nextFeatherIndex; i++)
+                {
+                    string debugMessage = progression.GetFeatherIndexDebugMessage(i);
+
+                    if (!string.IsNullOrWhiteSpace(debugMessage))
+                    {
+                        Debug.Log(debugMessage, this);
+                    }
+
+                    FeatherIndexReached?.Invoke(i);
+                }
+            }
+
+            _currentFeatherIndex = nextFeatherIndex;
+        }
+    }
+}
