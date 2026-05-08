@@ -14,7 +14,8 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private float jumpForce = 11.5f;
 
         [Header("Ground Check")]
-        [SerializeField] private Collider2D feetCollider;
+        [SerializeField] private Transform groundCheckOrigin;
+        [SerializeField] private Vector2 groundCheckSize = new Vector2(0.7f, 0.1f);
         [SerializeField] private LayerMask groundLayers = ~0;
         [SerializeField] private float groundCheckCastDistance = 0.05f;
 
@@ -316,20 +317,32 @@ namespace Icarus.Gameplay.Player
 
         private bool IsGrounded()
         {
-            if (feetCollider == null)
+            if (groundCheckOrigin == null)
             {
                 return false;
             }
 
-            // Check ground layer by casting a feet-sized box downward.
-            Bounds feetBounds = feetCollider.bounds;
-            Vector2 castOrigin = feetBounds.center;
-            Vector2 castSize = feetBounds.size;
+            // Check ground layer by casting a sensor-sized box downward.
+            Vector2 castOrigin = groundCheckOrigin.position;
+            Vector2 castSize = GetWorldGroundCheckSize();
             RaycastHit2D hit = Physics2D.BoxCast(castOrigin, castSize,
                                                 0f, Vector2.down,
                                                 groundCheckCastDistance, groundLayers);
 
             return hit.collider != null;
+        }
+
+        private Vector2 GetWorldGroundCheckSize()
+        {
+            if (groundCheckOrigin == null)
+            {
+                return groundCheckSize;
+            }
+
+            Vector3 scale = groundCheckOrigin.lossyScale;
+            return new Vector2(
+                Mathf.Abs(groundCheckSize.x * scale.x),
+                Mathf.Abs(groundCheckSize.y * scale.y));
         }
 
         private void UpdateFacingDirection()
@@ -555,16 +568,20 @@ namespace Icarus.Gameplay.Player
 
         private void OnDrawGizmos()
         {
-            if (feetCollider != null) DrawFeetColliderGizmo();
+            if (groundCheckOrigin != null) DrawGroundCheckGizmo();
         }
 
-        private void DrawFeetColliderGizmo()
+        private void DrawGroundCheckGizmo()
         {
+            Vector2 castSize = GetWorldGroundCheckSize();
+            Vector2 startCenter = groundCheckOrigin.position;
+            Vector2 endCenter = startCenter + Vector2.down * Mathf.Abs(groundCheckCastDistance);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(startCenter, castSize);
+
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(
-                feetCollider.bounds.center + Vector3.down * groundCheckCastDistance,
-                feetCollider.bounds.size
-            );
+            Gizmos.DrawWireCube(endCenter, castSize);
         }
 
     }
