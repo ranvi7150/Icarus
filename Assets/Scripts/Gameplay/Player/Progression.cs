@@ -12,10 +12,8 @@ namespace Icarus.Gameplay.Player
         [SerializeField, Min(1)] private int doubleJumpUnlockFeathers = 7;
 
         [Header("Glide Duration")]
-        [SerializeField, Min(0.1f)] private float baseGlideDurationSeconds = 2.5f;
-        [SerializeField, Min(0.1f)] private float upgradedGlideDurationSeconds = 4f;
-
-        public int FeatherUnlockCount => 4;
+        [SerializeField, Min(0.1f)] private float baseGlideDurationSeconds = 1f;
+        [SerializeField, Min(0.1f)] private float upgradedGlideDurationSeconds = 3f;
 
         public bool IsDashUnlocked(int featherCount)
         {
@@ -86,6 +84,7 @@ namespace Icarus.Gameplay.Player
             }
         }
 
+        
         private void OnValidate()
         {
             wingToggleUnlockFeathers = Mathf.Max(wingToggleUnlockFeathers, dashUnlockFeathers + 1);

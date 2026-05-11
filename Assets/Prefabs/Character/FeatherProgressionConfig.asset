@@ -16,5 +16,5 @@ MonoBehaviour:
   wingToggleUnlockFeathers: 3
   glideDurationUpgradeFeathers: 5
   doubleJumpUnlockFeathers: 7
-  baseGlideDurationSeconds: 2.5
-  upgradedGlideDurationSeconds: 4
+  baseGlideDurationSeconds: 1
+  upgradedGlideDurationSeconds: 3

@@ -54,17 +54,14 @@ namespace Icarus.Gameplay.Player
 
             if (logFeatherIndexChanges && nextFeatherIndex > _currentFeatherIndex)
             {
-                for (int i = _currentFeatherIndex + 1; i <= nextFeatherIndex; i++)
+                string debugMessage = progression.GetFeatherIndexDebugMessage(nextFeatherIndex);
+
+                if (!string.IsNullOrWhiteSpace(debugMessage))
                 {
-                    string debugMessage = progression.GetFeatherIndexDebugMessage(i);
-
-                    if (!string.IsNullOrWhiteSpace(debugMessage))
-                    {
-                        Debug.Log(debugMessage, this);
-                    }
-
-                    FeatherIndexReached?.Invoke(i);
+                    Debug.Log(debugMessage, this);
                 }
+
+                FeatherIndexReached?.Invoke(nextFeatherIndex);
             }
 
             _currentFeatherIndex = nextFeatherIndex;

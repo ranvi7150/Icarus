@@ -72,21 +72,14 @@ namespace Icarus.Gameplay.Player
 
         private void Awake()
         {
-            _rb = GetComponent<Rigidbody2D>(); 
+            _rb = GetComponent<Rigidbody2D>();
+            _playerStats = GetComponent<PlayerStats>();
             _motorVelocity = _rb.linearVelocity;
 
             wing = GetComponentInChildren<Wing>();
             if (wing == null)
             {
                 Debug.LogError("PlayerController requires a Wing component in children.", this);
-                enabled = false;
-                return;
-            }
-
-            _playerStats = GetComponent<PlayerStats>();
-            if (_playerStats == null)
-            {
-                Debug.LogError("PlayerController requires a PlayerStats component.", this);
                 enabled = false;
                 return;
             }

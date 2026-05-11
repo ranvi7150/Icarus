@@ -35,12 +35,16 @@ namespace Icarus.Gameplay.Player
             }
 
             isWingOn = false;
-            _remainingGlideDuration = GetMaxGlideDurationSeconds();
 
             if (wingVisual != null)
             {
                 wingVisual.SetActive(false);
             }
+        }
+
+        private void Start()
+        {
+            _remainingGlideDuration = GetMaxGlideDurationSeconds();
         }
 
         public void ToggleWing()
@@ -84,7 +88,6 @@ namespace Icarus.Gameplay.Player
         {
             if (!CanToggleWing())
             {
-                SetWingState(false);
                 return;
             }
 
