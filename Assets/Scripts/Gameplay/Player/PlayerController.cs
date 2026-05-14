@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using UnityEngine.InputSystem;
 using Icarus.Gameplay.Interaction;
 
@@ -65,6 +66,13 @@ namespace Icarus.Gameplay.Player
         private Vector2 _motorVelocity;
         
         private IInteractable _currentInteractable;
+
+        public event Action Interacted;
+
+        public Vector2 MoveInput => _moveInput;
+        public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
+        public int FacingDirection => _facingDirection;
+        public bool IsGroundedForAnimation => IsGrounded();
 
         // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
         // totalTargetVelocity = _motorVelocity + airFlowCarry
@@ -575,6 +583,7 @@ namespace Icarus.Gameplay.Player
             }
 
             _currentInteractable.Interact();
+            Interacted?.Invoke();
         }
 
 

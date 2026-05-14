@@ -9,7 +9,6 @@ namespace Icarus.Gameplay.Player
         [SerializeField, Min(1)] private int dashUnlockFeathers = 1;
         [SerializeField, Min(1)] private int wingToggleUnlockFeathers = 3;
         [SerializeField, Min(1)] private int glideDurationUpgradeFeathers = 5;
-        [SerializeField, Min(1)] private int doubleJumpUnlockFeathers = 7;
 
         [Header("Glide Duration")]
         [SerializeField, Min(0.1f)] private float baseGlideDurationSeconds = 1f;
@@ -28,11 +27,6 @@ namespace Icarus.Gameplay.Player
         public bool HasGlideDurationUpgrade(int featherCount)
         {
             return featherCount >= glideDurationUpgradeFeathers;
-        }
-
-        public bool IsDoubleJumpUnlocked(int featherCount)
-        {
-            return featherCount >= doubleJumpUnlockFeathers;
         }
 
         public float GetGlideDurationSeconds(int featherCount)
@@ -59,12 +53,7 @@ namespace Icarus.Gameplay.Player
                 return 1;
             }
 
-            if (featherCount < doubleJumpUnlockFeathers)
-            {
-                return 2;
-            }
-
-            return 3;
+            return 2;
         }
 
         public string GetFeatherIndexDebugMessage(int featherIndex)
@@ -77,8 +66,6 @@ namespace Icarus.Gameplay.Player
                     return $"Reached {wingToggleUnlockFeathers} feather(s): Wing toggle unlocked.";
                 case 2:
                     return $"Reached {glideDurationUpgradeFeathers} feather(s): Glide duration increased.";
-                case 3:
-                    return $"Reached {doubleJumpUnlockFeathers} feather(s): Double jump unlocked.";
                 default:
                     return string.Empty;
             }
@@ -89,7 +76,6 @@ namespace Icarus.Gameplay.Player
         {
             wingToggleUnlockFeathers = Mathf.Max(wingToggleUnlockFeathers, dashUnlockFeathers + 1);
             glideDurationUpgradeFeathers = Mathf.Max(glideDurationUpgradeFeathers, wingToggleUnlockFeathers + 1);
-            doubleJumpUnlockFeathers = Mathf.Max(doubleJumpUnlockFeathers, glideDurationUpgradeFeathers + 1);
             upgradedGlideDurationSeconds = Mathf.Max(upgradedGlideDurationSeconds, baseGlideDurationSeconds);
         }
     }

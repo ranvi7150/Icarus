@@ -18,7 +18,6 @@ namespace Icarus.Gameplay.Player
         public bool CanDash => progression.IsDashUnlocked(_featherCount);
         public bool CanWingToggle => progression.IsWingToggleUnlocked(_featherCount);
         public bool HasGlideDurationUpgrade => progression.HasGlideDurationUpgrade(_featherCount);
-        public bool CanDoubleJump => progression.IsDoubleJumpUnlocked(_featherCount);
         public float GlideDurationSeconds => progression.GetGlideDurationSeconds(_featherCount);
 
         public event Action<int> FeatherCountChanged;
