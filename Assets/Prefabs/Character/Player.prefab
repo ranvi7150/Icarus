@@ -238,7 +238,6 @@ MonoBehaviour:
   dashDuration: 0.12
   dashCooldown: 0.4
   airFlowCarryDecay: 25
-  wing: {fileID: 6206037150605277301}
 --- !u!114 &4479616767529607731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,8 +278,8 @@ Transform:
   m_GameObject: {fileID: 1972731469551398707}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.04, y: 0.65, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
+  m_LocalPosition: {x: 0.065, y: 0.496, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7493600383109546010}
@@ -389,7 +388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a3d3762be0fb0e4ba2e1c9ca786d3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.Wing
-  wingVisual: {fileID: 1972731469551398707}
   glideFallGravityMultiplier: 1.1
   glideMaxFallSpeed: 6
 --- !u!1 &7193981695114521802
@@ -403,7 +401,6 @@ GameObject:
   - component: {fileID: 1504519438782651348}
   - component: {fileID: 4654984557321471563}
   - component: {fileID: 3882434272039066522}
-  - component: {fileID: 5593852097658637946}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -507,25 +504,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5593852097658637946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7193981695114521802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7823dcc2be34d64fa6e5177e1155bcd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.PlayerAnimator
-  playerController: {fileID: 662686091008000194}
-  idleStateName: Idle
-  runStateName: Run
-  jumpStateName: Jump
-  interactionStateName: Interaction
-  runInputThreshold: 0.01
-  runVelocityThreshold: 0.05
 --- !u!1 &7399255551798267981
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +622,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 208019105976636995}
+  - component: {fileID: 3307027156306227677}
+  - component: {fileID: 7142154860331125195}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -668,3 +648,39 @@ Transform:
   - {fileID: 7493600383109546010}
   m_Father: {fileID: 2676149186809048713}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3307027156306227677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8444862922676067334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7823dcc2be34d64fa6e5177e1155bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.PlayerAnimator
+  playerController: {fileID: 662686091008000194}
+  bodyAnimator: {fileID: 3882434272039066522}
+  idleStateName: Idle
+  runStateName: Run
+  jumpStateName: Jump
+  interactionStateName: Interaction
+  runInputThreshold: 0.01
+  runVelocityThreshold: 0.05
+--- !u!114 &7142154860331125195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8444862922676067334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c8fb61d942d6046bc135b2eefe7a5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.PlayerVisualizer
+  playerController: {fileID: 662686091008000194}
+  wing: {fileID: 6206037150605277301}
+  bodyRenderer: {fileID: 4654984557321471563}
+  wingRenderer: {fileID: 178336676560412732}

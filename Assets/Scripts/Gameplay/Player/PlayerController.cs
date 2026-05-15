@@ -42,11 +42,9 @@ namespace Icarus.Gameplay.Player
         [Header("Air Flow")]
         [SerializeField] private float airFlowCarryDecay = 18f;
         
-        [Header("Wing")]
-        [SerializeField] private Wing wing;
-
         private Rigidbody2D _rb;
         private PlayerStats _playerStats;
+        private Wing _wing;
         private Vector2 _moveInput;
 
         private float _coyoteTimer;
@@ -66,11 +64,12 @@ namespace Icarus.Gameplay.Player
         private Vector2 _motorVelocity;
         
         private IInteractable _currentInteractable;
+        private bool _isInitialized;
 
         public event Action Interacted;
 
         public Vector2 MoveInput => _moveInput;
-        public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
+        public Vector2 Velocity => _rb.linearVelocity;
         public int FacingDirection => _facingDirection;
         public bool IsGroundedForAnimation => IsGrounded();
 
@@ -81,32 +80,52 @@ namespace Icarus.Gameplay.Player
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
-            _playerStats = GetComponent<PlayerStats>();
             _motorVelocity = _rb.linearVelocity;
+            _playerStats = GetComponent<PlayerStats>();
+            _wing = GetComponentInChildren<Wing>();
 
-            wing = GetComponentInChildren<Wing>();
-            if (wing == null)
+            if (groundCheckOrigin == null)
+            {
+                Debug.LogError("PlayerController requires a Ground Check Origin reference.", this);
+                enabled = false;
+                return;
+            }
+
+            if (interactionCollider == null)
+            {
+                Debug.LogError("PlayerController requires an Interaction Collider reference.", this);
+                enabled = false;
+                return;
+            }
+
+            if (_wing == null)
             {
                 Debug.LogError("PlayerController requires a Wing component in children.", this);
                 enabled = false;
                 return;
             }
+
+            _isInitialized = true;
         }
 
         private void OnEnable()
         {
-            wing.WingStateChanged += HandleWingStateChanged;
+            _wing.WingStateChanged += HandleWingStateChanged;
         }
 
         private void OnDisable()
         {
-            wing.WingStateChanged -= HandleWingStateChanged;
+            if (!_isInitialized)
+            {
+                return;
+            }
+
+            _wing.WingStateChanged -= HandleWingStateChanged;
 
             if (_currentInteractable is IInteractionPromptTarget promptTarget)
             {
                 promptTarget.SetInteractionPromptVisible(false);
             }
-
             _currentInteractable = null;
         }
 
@@ -278,11 +297,11 @@ namespace Icarus.Gameplay.Player
             }
             else
             {
-                gravityScale = canGlideInAir ? wing.GlideFallGravityMultiplier : fallMultiplier;
+                gravityScale = canGlideInAir ? _wing.GlideFallGravityMultiplier : fallMultiplier;
             }
 
             _motorVelocity += Vector2.up * Physics2D.gravity.y * gravityScale * Time.fixedDeltaTime;
-            float appliedMaxFallSpeed = canGlideInAir ? wing.GlideMaxFallSpeed : maxFallSpeed;
+            float appliedMaxFallSpeed = canGlideInAir ? _wing.GlideMaxFallSpeed : maxFallSpeed;
             _motorVelocity.y = Mathf.Max(_motorVelocity.y, -appliedMaxFallSpeed);
         }
 
@@ -335,11 +354,6 @@ namespace Icarus.Gameplay.Player
 
         private bool IsGrounded()
         {
-            if (groundCheckOrigin == null)
-            {
-                return false;
-            }
-
             // Check ground layer by casting a sensor-sized box downward.
             Vector2 castOrigin = groundCheckOrigin.position;
             Vector2 castSize = GetWorldGroundCheckSize();
@@ -352,11 +366,6 @@ namespace Icarus.Gameplay.Player
 
         private Vector2 GetWorldGroundCheckSize()
         {
-            if (groundCheckOrigin == null)
-            {
-                return groundCheckSize;
-            }
-
             Vector3 scale = groundCheckOrigin.lossyScale;
             return new Vector2(
                 Mathf.Abs(groundCheckSize.x * scale.x),
@@ -368,8 +377,13 @@ namespace Icarus.Gameplay.Player
             // Update facing direction from horizontal input.
             if (Mathf.Abs(_moveInput.x) > 0.01f)
             {
-                _facingDirection = _moveInput.x > 0f ? 1 : -1;
+                SetFacingDirection(_moveInput.x > 0f ? 1 : -1);
             }
+        }
+
+        private void SetFacingDirection(int direction)
+        {
+            _facingDirection = direction;
         }
 
         private bool CanStartDash(bool isGrounded)
@@ -427,22 +441,22 @@ namespace Icarus.Gameplay.Player
 
         private bool CanDash()
         {
-            return _playerStats.CanDash && wing.CanDash;
+            return _playerStats.CanDash && _wing.CanDash;
         }
 
         private bool CanUseAirFlow()
         {
-            return wing.CanUseAirFlow;
+            return _wing.CanUseAirFlow;
         }
 
         private bool CanGlide()
         {
-            return wing.CanGlide;
+            return _wing.CanGlide;
         }
 
         private void UpdateWingGlideState(bool isGrounded)
         {
-            wing.TickGlideDuration(isGrounded, Time.fixedDeltaTime);
+            _wing.TickGlideDuration(isGrounded, Time.fixedDeltaTime);
         }
 
         private void HandleWingStateChanged(bool isWingOn)
@@ -523,11 +537,6 @@ namespace Icarus.Gameplay.Player
 
         private bool IsInteractionTouching(Collider2D other)
         {
-            if (interactionCollider == null)
-            {
-                return false;
-            }
-
             return interactionCollider.IsTouching(other);
         }
 
@@ -566,7 +575,7 @@ namespace Icarus.Gameplay.Player
         {
             if (ctx.performed)
             {
-                wing.ToggleWing();
+                _wing.ToggleWing();
             }
         }
 

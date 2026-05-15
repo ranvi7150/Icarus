@@ -2,11 +2,10 @@ using UnityEngine;
 
 namespace Icarus.Gameplay.Player
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(SpriteRenderer))]
     public class PlayerAnimator : MonoBehaviour
     {
         [SerializeField] private PlayerController playerController;
+        [SerializeField] private Animator bodyAnimator;
         [SerializeField] private string idleStateName = "Idle";
         [SerializeField] private string runStateName = "Run";
         [SerializeField] private string jumpStateName = "Jump";
@@ -14,25 +13,27 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private float runInputThreshold = 0.01f;
         [SerializeField] private float runVelocityThreshold = 0.05f;
 
-        private Animator _animator;
-        private SpriteRenderer _spriteRenderer;
         private int _idleStateHash;
         private int _runStateHash;
         private int _jumpStateHash;
         private int _interactionStateHash;
+        
         private int _currentStateHash;
         private int _interactionStartFrame;
         private bool _isInteractionPlaying;
 
         private void Awake()
         {
-            _animator = GetComponent<Animator>();
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-
-            playerController = GetComponentInParent<PlayerController>();
             if (playerController == null)
             {
                 Debug.LogError("PlayerAnimator requires a PlayerController component in Parent.", this);
+                enabled = false;
+                return;
+            }
+
+            if (bodyAnimator == null)
+            {
+                Debug.LogError("PlayerAnimator requires a Body Animator reference.", this);
                 enabled = false;
                 return;
             }
@@ -56,8 +57,6 @@ namespace Icarus.Gameplay.Player
 
         private void Update()
         {
-            UpdateFacingDirection();
-
             if (IsInteractionStillPlaying())
             {
                 return;
@@ -79,11 +78,6 @@ namespace Icarus.Gameplay.Player
             return hasMoveInput || isMoving ? _runStateHash : _idleStateHash;
         }
 
-        private void UpdateFacingDirection()
-        {
-            _spriteRenderer.flipX = playerController.FacingDirection > 0;
-        }
-
         private void PlayInteraction()
         {
             _isInteractionPlaying = true;
@@ -103,7 +97,7 @@ namespace Icarus.Gameplay.Player
                 return true;
             }
 
-            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo stateInfo = bodyAnimator.GetCurrentAnimatorStateInfo(0);
             return stateInfo.shortNameHash == _interactionStateHash && stateInfo.normalizedTime < 1f;
         }
 
@@ -115,7 +109,7 @@ namespace Icarus.Gameplay.Player
             }
 
             _currentStateHash = stateHash;
-            _animator.Play(stateHash, 0, 0f);
+            bodyAnimator.Play(stateHash, 0, 0f);
         }
     }
 }

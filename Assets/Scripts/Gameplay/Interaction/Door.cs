@@ -2,20 +2,25 @@ using UnityEngine;
 
 namespace Icarus.Gameplay.Interaction
 {
+    [RequireComponent(typeof(Collider2D))]
     public class Door : MonoBehaviour, IActivatable
     {
         [Header("Door State")]
         [SerializeField] private bool startActivated = true;
-        [SerializeField] private Collider2D controlledCollider;
         [SerializeField] private GameObject visualTarget;
 
+        private Collider2D _controlledCollider;
         private bool _isActivated;
 
         private void Awake()
         {
-            if (controlledCollider == null)
+            _controlledCollider = GetComponent<Collider2D>();
+
+            if (visualTarget == null)
             {
-                controlledCollider = GetComponent<Collider2D>();
+                Debug.LogError("Door requires a Visual Target reference.", this);
+                enabled = false;
+                return;
             }
 
             // Force initial application to collider/visual state.
@@ -42,21 +47,11 @@ namespace Icarus.Gameplay.Interaction
 
         private void SetColliderState(bool isEnabled)
         {
-            if (controlledCollider == null)
-            {
-                return;
-            }
-
-            controlledCollider.enabled = isEnabled;
+            _controlledCollider.enabled = isEnabled;
         }
 
         private void SetVisualState(bool isVisible)
         {
-            if (visualTarget == null)
-            {
-                return;
-            }
-
             visualTarget.SetActive(isVisible);
         }
     }

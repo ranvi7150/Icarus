@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Icarus.Gameplay.AirFlow
 {
-    [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(BoxCollider2D))]
     public class AirFlowZone : MonoBehaviour, IActivatable
     {
         private enum ActivateMode
@@ -18,21 +18,25 @@ namespace Icarus.Gameplay.AirFlow
         [SerializeField] private float flowAcceleration = 30f;
         [SerializeField] private bool startActivated = true;
         [SerializeField] private ActivateMode activateMode = ActivateMode.ToggleActivation;
-        [SerializeField] private BoxCollider2D airFlowCollider;
         [SerializeField] private GameObject visualTarget;
 
         // Prefab default flow is +X. Actual world flow comes from zone rotation.
         public Vector2 AirFlowDirection => ((Vector2)transform.right).normalized;
 
+        private BoxCollider2D _airFlowCollider;
         private Vector2 _currentFlowVelocity;
         private bool _hasCurrentFlowVelocity;
         private bool _isActivated;
 
         private void Awake()
         {
-            if (airFlowCollider == null)
+            _airFlowCollider = GetComponent<BoxCollider2D>();
+
+            if (visualTarget == null)
             {
-                airFlowCollider = GetComponent<BoxCollider2D>();
+                Debug.LogError("AirFlowZone requires a Visual Target reference.", this);
+                enabled = false;
+                return;
             }
 
             // Force initial application to collider/visual state.
@@ -111,21 +115,11 @@ namespace Icarus.Gameplay.AirFlow
 
         private void SetColliderState(bool isEnabled)
         {
-            if (airFlowCollider == null)
-            {
-                return;
-            }
-
-            airFlowCollider.enabled = isEnabled;
+            _airFlowCollider.enabled = isEnabled;
         }
         
         private void SetVisualState(bool isVisible)
         {
-            if (visualTarget == null)
-            {
-                return;
-            }
-
             visualTarget.SetActive(isVisible);
         }
 
@@ -174,16 +168,15 @@ namespace Icarus.Gameplay.AirFlow
 
         private void OnDrawGizmos()
         {
-            if (airFlowCollider == null)
-            {
-                return;
-            }
+            BoxCollider2D gizmoCollider = _airFlowCollider != null
+                ? _airFlowCollider
+                : GetComponent<BoxCollider2D>();
 
             Matrix4x4 prevMatrix = Gizmos.matrix;
 
             Gizmos.color = Color.blue;
-            Gizmos.matrix = airFlowCollider.transform.localToWorldMatrix;
-            Gizmos.DrawWireCube(airFlowCollider.offset, airFlowCollider.size);
+            Gizmos.matrix = gizmoCollider.transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(gizmoCollider.offset, gizmoCollider.size);
 
             Gizmos.matrix = prevMatrix;
         }

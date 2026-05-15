@@ -5,9 +5,6 @@ namespace Icarus.Gameplay.Player
 {
     public class Wing : MonoBehaviour
     {
-        [Header("Wing State")]
-        [SerializeField] private GameObject wingVisual;
-
         [Header("Glide")]
         [SerializeField] private float glideFallGravityMultiplier = 1.1f;
         [SerializeField] private float glideMaxFallSpeed = 6f;
@@ -19,6 +16,7 @@ namespace Icarus.Gameplay.Player
         public bool CanDash => !isWingOn;
         public bool CanGlide => isWingOn && _remainingGlideDuration > 0f;
         public bool CanUseAirFlow => CanGlide;
+        public bool IsWingOn => isWingOn;
         public float GlideFallGravityMultiplier => glideFallGravityMultiplier;
         public float GlideMaxFallSpeed => glideMaxFallSpeed;
 
@@ -35,11 +33,6 @@ namespace Icarus.Gameplay.Player
             }
 
             isWingOn = false;
-
-            if (wingVisual != null)
-            {
-                wingVisual.SetActive(false);
-            }
         }
 
         private void Start()
@@ -76,11 +69,6 @@ namespace Icarus.Gameplay.Player
 
             isWingOn = isOn;
 
-            if (wingVisual != null)
-            {
-                wingVisual.SetActive(isWingOn);
-            }
-
             WingStateChanged?.Invoke(isWingOn);
         }
 
@@ -108,6 +96,7 @@ namespace Icarus.Gameplay.Player
                 SetWingState(false);
             }
         }
+
         private float GetMaxGlideDurationSeconds()
         {
             return Mathf.Max(0.1f, _playerStats.GlideDurationSeconds);
