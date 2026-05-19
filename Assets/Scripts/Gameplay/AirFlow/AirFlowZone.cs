@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Icarus.Gameplay.AirFlow
 {
     [RequireComponent(typeof(BoxCollider2D))]
+    [RequireComponent(typeof(AirFlowZoneVisualizer))]
     public class AirFlowZone : MonoBehaviour, IActivatable
     {
         private enum ActivateMode
@@ -18,12 +19,12 @@ namespace Icarus.Gameplay.AirFlow
         [SerializeField] private float flowAcceleration = 30f;
         [SerializeField] private bool startActivated = true;
         [SerializeField] private ActivateMode activateMode = ActivateMode.ToggleActivation;
-        [SerializeField] private GameObject visualTarget;
 
         // Prefab default flow is +X. Actual world flow comes from zone rotation.
         public Vector2 AirFlowDirection => ((Vector2)transform.right).normalized;
 
         private BoxCollider2D _airFlowCollider;
+        private AirFlowZoneVisualizer _visualizer;
         private Vector2 _currentFlowVelocity;
         private bool _hasCurrentFlowVelocity;
         private bool _isActivated;
@@ -31,14 +32,11 @@ namespace Icarus.Gameplay.AirFlow
         private void Awake()
         {
             _airFlowCollider = GetComponent<BoxCollider2D>();
+            _visualizer = GetComponent<AirFlowZoneVisualizer>();
+        }
 
-            if (visualTarget == null)
-            {
-                Debug.LogError("AirFlowZone requires a Visual Target reference.", this);
-                enabled = false;
-                return;
-            }
-
+        private void Start()
+        {
             // Force initial application to collider/visual state.
             _isActivated = !startActivated;
             SetActivated(startActivated);
@@ -120,7 +118,7 @@ namespace Icarus.Gameplay.AirFlow
         
         private void SetVisualState(bool isVisible)
         {
-            visualTarget.SetActive(isVisible);
+            _visualizer.SetActivated(isVisible);
         }
 
         private void ReverseFlowDirection()

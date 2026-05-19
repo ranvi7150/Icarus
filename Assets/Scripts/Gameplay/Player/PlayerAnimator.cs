@@ -10,6 +10,7 @@ namespace Icarus.Gameplay.Player
         [SerializeField] private string runStateName = "Run";
         [SerializeField] private string jumpStateName = "Jump";
         [SerializeField] private string interactionStateName = "Interaction";
+        [SerializeField] private string deathStateName = "Death";
         [SerializeField] private float runInputThreshold = 0.01f;
         [SerializeField] private float runVelocityThreshold = 0.05f;
 
@@ -17,6 +18,7 @@ namespace Icarus.Gameplay.Player
         private int _runStateHash;
         private int _jumpStateHash;
         private int _interactionStateHash;
+        private int _deathStateHash;
         
         private int _currentStateHash;
         private int _interactionStartFrame;
@@ -42,21 +44,31 @@ namespace Icarus.Gameplay.Player
             _runStateHash = Animator.StringToHash(runStateName);
             _jumpStateHash = Animator.StringToHash(jumpStateName);
             _interactionStateHash = Animator.StringToHash(interactionStateName);
+            _deathStateHash = Animator.StringToHash(deathStateName);
             _currentStateHash = _idleStateHash;
         }
 
         private void OnEnable()
         {
             playerController.Interacted += PlayInteraction;
+            playerController.Died += PlayDeath;
+            playerController.Respawned += PlayRespawn;
         }
 
         private void OnDisable()
         {
             playerController.Interacted -= PlayInteraction;
+            playerController.Died -= PlayDeath;
+            playerController.Respawned -= PlayRespawn;
         }
 
         private void Update()
         {
+            if (!playerController.IsAlive)
+            {
+                return;
+            }
+
             if (IsInteractionStillPlaying())
             {
                 return;
@@ -83,6 +95,18 @@ namespace Icarus.Gameplay.Player
             _isInteractionPlaying = true;
             _interactionStartFrame = Time.frameCount;
             PlayState(_interactionStateHash, restart: true);
+        }
+
+        private void PlayDeath()
+        {
+            _isInteractionPlaying = false;
+            PlayState(_deathStateHash, restart: true);
+        }
+
+        private void PlayRespawn()
+        {
+            _isInteractionPlaying = false;
+            PlayState(GetMovementStateHash(), restart: true);
         }
 
         private bool IsInteractionStillPlaying()

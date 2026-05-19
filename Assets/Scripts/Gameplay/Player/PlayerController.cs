@@ -9,6 +9,14 @@ namespace Icarus.Gameplay.Player
     [RequireComponent(typeof(PlayerStats))]
     public class PlayerController : MonoBehaviour
     {
+        private enum PlayerState
+        {
+            Alive,
+            Dying,
+            Respawning,
+            SceneTransitioning
+        }
+
         private const float VelocityEpsilonSqr = 0.0001f;
 
         [Header("Movement")]
@@ -64,14 +72,20 @@ namespace Icarus.Gameplay.Player
         private Vector2 _motorVelocity;
         
         private IInteractable _currentInteractable;
+        private PlayerState _state = PlayerState.Alive;
         private bool _isInitialized;
 
         public event Action Interacted;
+        public event Action Died;
+        public event Action Respawned;
 
         public Vector2 MoveInput => _moveInput;
         public Vector2 Velocity => _rb.linearVelocity;
         public int FacingDirection => _facingDirection;
         public bool IsGroundedForAnimation => IsGrounded();
+        public bool IsAlive => _state == PlayerState.Alive;
+        public bool IsDying => _state == PlayerState.Dying;
+        public bool CanControl => _state == PlayerState.Alive;
 
         // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
         // totalTargetVelocity = _motorVelocity + airFlowCarry
@@ -121,16 +135,16 @@ namespace Icarus.Gameplay.Player
             }
 
             _wing.WingStateChanged -= HandleWingStateChanged;
-
-            if (_currentInteractable is IInteractionPromptTarget promptTarget)
-            {
-                promptTarget.SetInteractionPromptVisible(false);
-            }
-            _currentInteractable = null;
+            ClearInteractionTarget();
         }
 
         private void Update()
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             bool isGrounded = IsGrounded();
 
             UpdateJumpTimers(isGrounded);
@@ -140,6 +154,11 @@ namespace Icarus.Gameplay.Player
 
         private void FixedUpdate()
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             bool isGrounded = IsGrounded();
             UpdateWingGlideState(isGrounded);
 
@@ -415,7 +434,7 @@ namespace Icarus.Gameplay.Player
 
         public void SetAirFlowVelocity(Vector2 velocity)
         {
-            if (!CanUseAirFlow())
+            if (!CanControl || !CanUseAirFlow())
             {
                 return;
             }
@@ -437,6 +456,38 @@ namespace Icarus.Gameplay.Player
             _isInAirFlow = false;
             _airFlowVelocity = Vector2.zero;
             _motorVelocity = _rb.linearVelocity;
+        }
+
+        public void RequestDeath()
+        {
+            if (!IsAlive)
+            {
+                return;
+            }
+
+            _state = PlayerState.Dying;
+            ResetGameplayState();
+            Died?.Invoke();
+        }
+
+        public void BeginSceneTransition()
+        {
+            if (!IsAlive)
+            {
+                return;
+            }
+
+            _state = PlayerState.SceneTransitioning;
+            ResetGameplayState();
+        }
+
+        public void RespawnAt(Vector3 spawnPosition)
+        {
+            _state = PlayerState.Respawning;
+            transform.position = spawnPosition;
+            ResetGameplayState();
+            _state = PlayerState.Alive;
+            Respawned?.Invoke();
         }
 
         private bool CanDash()
@@ -489,8 +540,39 @@ namespace Icarus.Gameplay.Player
             }
         }
 
+        private void ResetGameplayState()
+        {
+            _moveInput = Vector2.zero;
+            _motorVelocity = Vector2.zero;
+            _rb.linearVelocity = Vector2.zero;
+
+            ResetDashState();
+            ResetJumpState(clearJumpHold: true, clearCoyoteTimer: true);
+
+            _isInAirFlow = false;
+            _airFlowVelocity = Vector2.zero;
+            _airFlowCarryVelocity = Vector2.zero;
+
+            ClearInteractionTarget();
+        }
+
+        private void ClearInteractionTarget()
+        {
+            if (_currentInteractable is IInteractionPromptTarget promptTarget)
+            {
+                promptTarget.SetInteractionPromptVisible(false);
+            }
+
+            _currentInteractable = null;
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             if (!IsInteractionTouching(other))
             {
                 return;
@@ -512,6 +594,11 @@ namespace Icarus.Gameplay.Player
 
         private void OnTriggerExit2D(Collider2D other)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             IInteractable interactable = other.GetComponentInParent<IInteractable>();
             if (interactable == null)
             {
@@ -545,12 +632,22 @@ namespace Icarus.Gameplay.Player
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             _moveInput = ctx.ReadValue<Vector2>();
             UpdateFacingDirection();
         }
 
         public void OnJump(InputAction.CallbackContext ctx)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             if (ctx.started || ctx.performed)
             {
                 _jumpHeld = true;
@@ -565,6 +662,11 @@ namespace Icarus.Gameplay.Player
 
         public void OnDash(InputAction.CallbackContext ctx)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             if (ctx.started || ctx.performed)
             {
                 _dashRequested = true;
@@ -573,6 +675,11 @@ namespace Icarus.Gameplay.Player
 
         public void OnWingToggle(InputAction.CallbackContext ctx)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             if (ctx.performed)
             {
                 _wing.ToggleWing();
@@ -581,6 +688,11 @@ namespace Icarus.Gameplay.Player
 
         public void OnInteract(InputAction.CallbackContext ctx)
         {
+            if (!CanControl)
+            {
+                return;
+            }
+
             if (!ctx.performed)
             {
                 return;
