@@ -9,6 +9,8 @@ namespace Icarus.UI.HUD
         [SerializeField] private PlayerStats playerStats;
         [SerializeField] private TMP_Text featherCountText;
 
+        private bool _hasStarted;
+
         private void Awake()
         {
             if (playerStats == null)
@@ -29,6 +31,16 @@ namespace Icarus.UI.HUD
         private void OnEnable()
         {
             playerStats.FeatherCountChanged += HandleFeatherCountChanged;
+
+            if (_hasStarted)
+            {
+                UpdateCountText(playerStats.FeatherCount);
+            }
+        }
+
+        private void Start()
+        {
+            _hasStarted = true;
             UpdateCountText(playerStats.FeatherCount);
         }
 

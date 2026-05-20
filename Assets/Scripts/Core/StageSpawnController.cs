@@ -57,21 +57,11 @@ namespace Icarus.Core.SceneManagement
 
         private void OnEnable()
         {
-            if (player == null)
-            {
-                return;
-            }
-
             player.Died += HandlePlayerDied;
         }
 
         private void OnDisable()
         {
-            if (player == null)
-            {
-                return;
-            }
-
             player.Died -= HandlePlayerDied;
         }
 
@@ -105,7 +95,7 @@ namespace Icarus.Core.SceneManagement
 
         private void SpawnAtInitialPortal()
         {
-            if (StageTransitionController.TryConsumePendingSpawnPortalId(out string portalId))
+            if (StageTransitionController.TryGetArrivalPortalId(out string portalId))
             {
                 if (!TryGetPortal(portalId, out Portal transitionPortal))
                 {

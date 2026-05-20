@@ -106,7 +106,7 @@ namespace Icarus.Gameplay.Player
         private void PlayRespawn()
         {
             _isInteractionPlaying = false;
-            PlayState(GetMovementStateHash(), restart: true);
+            PlayState(_idleStateHash, restart: true);
         }
 
         private bool IsInteractionStillPlaying()

@@ -7,24 +7,25 @@ namespace Icarus.Gameplay.World
     [RequireComponent(typeof(Collider2D))]
     public class Portal : MonoBehaviour
     {
-        private const string SpawnPointName = "SpawnPoint";
-
         [SerializeField] private string portalId;
+
+        // Leave target fields empty to use this portal as a 'Spawn Point Only'.
         [SerializeField] private string targetSceneName;
         [SerializeField] private string targetPortalId;
         [SerializeField] private StageTransitionController stageTransitionController;
 
-        private Collider2D _portalCollider;
-        private Transform _spawnPoint;
+        private SpawnPoint _spawnPoint;
+        private bool _hasSceneTransition;
 
         public string PortalId => portalId;
-        public Vector3 SpawnPosition => _spawnPoint.position;
+        public Vector3 SpawnPosition => _spawnPoint.Position;
 
         private void Awake()
         {
-            _portalCollider = GetComponent<Collider2D>();
-            _portalCollider.isTrigger = true;
-            _spawnPoint = transform.Find(SpawnPointName);
+            _spawnPoint = GetComponentInChildren<SpawnPoint>();
+            bool hasTargetScene = !string.IsNullOrWhiteSpace(targetSceneName);
+            bool hasTargetPortal = !string.IsNullOrWhiteSpace(targetPortalId);
+            _hasSceneTransition = hasTargetScene && hasTargetPortal;
 
             if (string.IsNullOrWhiteSpace(portalId))
             {
@@ -35,12 +36,19 @@ namespace Icarus.Gameplay.World
 
             if (_spawnPoint == null)
             {
-                Debug.LogError("Portal requires a child SpawnPoint transform.", this);
+                Debug.LogError("Portal requires a SpawnPoint component in children.", this);
                 enabled = false;
                 return;
             }
 
-            if (HasSceneTransition() && stageTransitionController == null)
+            if (hasTargetScene != hasTargetPortal)
+            {
+                Debug.LogError("Portal scene transitions require both Target Scene Name and Target Portal ID.", this);
+                enabled = false;
+                return;
+            }
+
+            if (_hasSceneTransition && stageTransitionController == null)
             {
                 Debug.LogError("Portal requires a StageTransitionController reference for scene transitions.", this);
                 enabled = false;
@@ -50,7 +58,7 @@ namespace Icarus.Gameplay.World
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!HasSceneTransition())
+            if (!_hasSceneTransition)
             {
                 return;
             }
@@ -68,12 +76,6 @@ namespace Icarus.Gameplay.World
             }
 
             stageTransitionController.RequestSceneTransition(player, targetSceneName, targetPortalId);
-        }
-
-        private bool HasSceneTransition()
-        {
-            return !string.IsNullOrWhiteSpace(targetSceneName)
-                && !string.IsNullOrWhiteSpace(targetPortalId);
         }
     }
 }

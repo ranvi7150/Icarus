@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Player.PlayerController
   moveSpeed: 5
-  jumpForce: 11.5
+  jumpForce: 13
   groundCheckOrigin: {fileID: 1504844977433874533}
   groundCheckSize: {x: 0.8, y: 0.13}
   groundLayers:
@@ -230,10 +230,10 @@ MonoBehaviour:
   interactionCollider: {fileID: 3330650707405642033}
   coyoteTime: 0.12
   jumpBufferTime: 0.12
-  riseGravityMultiplier: 2.2
-  lowJumpMultiplier: 4.2
-  fallMultiplier: 3.4
-  maxFallSpeed: 18
+  riseGravityMultiplier: 2.6
+  lowJumpMultiplier: 8
+  fallMultiplier: 5
+  maxFallSpeed: 20
   dashSpeed: 14
   dashDuration: 0.12
   dashCooldown: 0.4
@@ -666,6 +666,7 @@ MonoBehaviour:
   runStateName: Run
   jumpStateName: Jump
   interactionStateName: Interaction
+  deathStateName: Death
   runInputThreshold: 0.01
   runVelocityThreshold: 0.05
 --- !u!114 &7142154860331125195

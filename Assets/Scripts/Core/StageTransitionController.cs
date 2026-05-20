@@ -6,14 +6,14 @@ namespace Icarus.Core.SceneManagement
 {
     public class StageTransitionController : MonoBehaviour
     {
-        private static string _pendingSpawnPortalId;
+        private static string _arrivalPortalId;
 
         private bool _isTransitioning;
 
-        public static bool TryConsumePendingSpawnPortalId(out string portalId)
+        public static bool TryGetArrivalPortalId(out string portalId)
         {
-            portalId = _pendingSpawnPortalId;
-            _pendingSpawnPortalId = null;
+            portalId = _arrivalPortalId;
+            _arrivalPortalId = null;
             return !string.IsNullOrWhiteSpace(portalId);
         }
 
@@ -37,7 +37,7 @@ namespace Icarus.Core.SceneManagement
             }
 
             _isTransitioning = true;
-            _pendingSpawnPortalId = targetPortalId;
+            _arrivalPortalId = targetPortalId;
             player.BeginSceneTransition();
             SceneManager.LoadScene(targetSceneName);
         }
