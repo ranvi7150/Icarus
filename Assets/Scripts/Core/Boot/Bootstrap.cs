@@ -1,4 +1,4 @@
-using System;
+using Icarus.Core.Saving;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,10 +6,13 @@ namespace Icarus.Core.Boot
 {    
     public class Bootstrap : MonoBehaviour
     {
-        [SerializeField] int sceneToMainMenu = 1;
+        [SerializeField] private int sceneToMainMenu = 1;
         
-        void Start()
+        private void Start()
         {
+            SaveData saveData = SaveManager.Load();
+            GameProgressState.Initialize(saveData);
+
             SceneManager.LoadScene(sceneToMainMenu);
         }
     }

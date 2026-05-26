@@ -1,3 +1,5 @@
+using System.Collections;
+using Icarus.Core.Saving;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Icarus.Gameplay.Player;
@@ -39,6 +41,13 @@ namespace Icarus.Core.SceneManagement
             _isTransitioning = true;
             _arrivalPortalId = targetPortalId;
             player.BeginSceneTransition();
+            StartCoroutine(SaveThenLoadScene(targetSceneName));
+        }
+
+        private IEnumerator SaveThenLoadScene(string targetSceneName)
+        {
+            GameProgressState.SetCurrentStage(targetSceneName);
+            yield return SaveManager.SaveRoutine(GameProgressState.CurrentSaveData);
             SceneManager.LoadScene(targetSceneName);
         }
     }

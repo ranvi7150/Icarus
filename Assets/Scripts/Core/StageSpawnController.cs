@@ -57,17 +57,27 @@ namespace Icarus.Core.SceneManagement
 
         private void OnEnable()
         {
+            if (!_isInitialized)
+            {
+                return;
+            }
+
             player.Died += HandlePlayerDied;
         }
 
         private void OnDisable()
         {
+            if (!_isInitialized)
+            {
+                return;
+            }
+
             player.Died -= HandlePlayerDied;
         }
 
         private void Start()
         {
-            if (!_isInitialized || !spawnOnStart)
+            if (!spawnOnStart)
             {
                 return;
             }

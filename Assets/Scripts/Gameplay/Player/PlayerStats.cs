@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using Icarus.Core;
+using Icarus.Core.Saving;
 
 namespace Icarus.Gameplay.Player
 {
@@ -33,15 +33,19 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
-            _featherCount = Mathf.Max(startFeatherCount, PlayerProgressState.FeatherCount);
-            PlayerProgressState.SetFeatherCount(_featherCount);
+            _featherCount = Mathf.Max(startFeatherCount, GameProgressState.FeatherCount);
+            GameProgressState.SetFeatherCount(_featherCount);
             RecalculateProgress(logFeatherIndexChanges: false);
         }
 
-        public bool TryCollectFeather()
+        public bool TryCollectFeather(string featherId)
         {
-            PlayerProgressState.AddFeather();
-            _featherCount = PlayerProgressState.FeatherCount;
+            if (!GameProgressState.TryCollectFeather(featherId))
+            {
+                return false;
+            }
+
+            _featherCount = GameProgressState.FeatherCount;
 
             Debug.Log($"Feather picked up: +1 (current: {_featherCount})", this);
 

@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+using Icarus.Core.Saving;
 using Icarus.Gameplay.Player;
 
 namespace Icarus.Gameplay.Item
@@ -7,7 +9,23 @@ namespace Icarus.Gameplay.Item
     [RequireComponent(typeof(Collider2D))]
     public class FeatherPickup : MonoBehaviour
     {
+        [SerializeField] private string featherId;
+
+        private string _saveId;
         private bool _isPickedUp;
+
+        private void Awake()
+        {
+            _saveId = BuildSaveId();
+        }
+
+        private void Start()
+        {
+            if (GameProgressState.HasCollectedFeather(_saveId))
+            {
+                Destroy(gameObject);
+            }
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -21,7 +39,7 @@ namespace Icarus.Gameplay.Item
                 return;
             }
 
-            if (!playerStats.TryCollectFeather())
+            if (!playerStats.TryCollectFeather(_saveId))
             {
                 return;
             }
@@ -42,6 +60,15 @@ namespace Icarus.Gameplay.Item
 
             playerStats = rb.GetComponent<PlayerStats>();
             return playerStats != null;
+        }
+
+        private string BuildSaveId()
+        {
+            string localId = string.IsNullOrWhiteSpace(featherId)
+                ? gameObject.name
+                : featherId;
+
+            return $"{SceneManager.GetActiveScene().name}:{localId}";
         }
 
         private void OnValidate()
