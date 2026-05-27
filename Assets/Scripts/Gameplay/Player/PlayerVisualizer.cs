@@ -6,12 +6,13 @@ namespace Icarus.Gameplay.Player
     {
         [SerializeField] private PlayerController playerController;
         [SerializeField] private Wing wing;
-        [SerializeField] private SpriteRenderer bodyRenderer;
-        [SerializeField] private SpriteRenderer wingRenderer;
 
-        private Vector3 _wingLocalPosition;
+        private BodyVisual _bodyVisual;
+        private WingVisual _wingVisual;
+        private GlideBar _glideBar;
         private int _lastFacingDirection;
         private bool _lastIsWingOn;
+        private float _lastGlideFillAmount = -1f;
 
         private void Awake()
         {
@@ -29,53 +30,63 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
-            if (bodyRenderer == null)
+            _bodyVisual = GetComponentInChildren<BodyVisual>(true);
+            if (_bodyVisual == null)
             {
-                Debug.LogError("PlayerVisualizer requires a Body SpriteRenderer reference.", this);
+                Debug.LogError("PlayerVisualizer requires a BodyVisual component in children.", this);
                 enabled = false;
                 return;
             }
 
-            if (wingRenderer == null)
+            _wingVisual = wing.GetComponentInChildren<WingVisual>(true);
+            if (_wingVisual == null)
             {
-                Debug.LogError("PlayerVisualizer requires a Wing SpriteRenderer reference.", this);
+                Debug.LogError("PlayerVisualizer requires a WingVisual component under Wing.", this);
                 enabled = false;
                 return;
             }
 
-            _wingLocalPosition = wingRenderer.transform.localPosition;
+            _glideBar = wing.GetComponentInChildren<GlideBar>(true);
+            if (_glideBar == null)
+            {
+                Debug.LogError("PlayerVisualizer requires a GlideBar component under Wing.", this);
+                enabled = false;
+                return;
+            }
         }
 
         private void Start()
         {
-            ApplyVisualState(playerController.FacingDirection, wing.IsWingOn);
+            ApplyVisualState(playerController.FacingDirection, wing.IsWingOn, wing.GlideDurationNormalized);
         }
 
         private void Update()
         {
             int facingDirection = playerController.FacingDirection;
             bool isWingOn = wing.IsWingOn;
-            if (_lastFacingDirection == facingDirection && _lastIsWingOn == isWingOn)
+            float glideFillAmount = wing.GlideDurationNormalized;
+            
+            if (_lastFacingDirection == facingDirection
+                && _lastIsWingOn == isWingOn
+                && Mathf.Approximately(_lastGlideFillAmount, glideFillAmount))
             {
                 return;
             }
 
-            ApplyVisualState(facingDirection, isWingOn);
+            ApplyVisualState(facingDirection, isWingOn, glideFillAmount);
         }
 
-        private void ApplyVisualState(int facingDirection, bool isWingOn)
+        private void ApplyVisualState(int facingDirection, bool isWingOn, float glideFillAmount)
         {
             bool flipX = facingDirection > 0;
 
-            bodyRenderer.flipX = flipX;
-            wingRenderer.gameObject.SetActive(isWingOn);
-
-            Vector3 wingPosition = _wingLocalPosition;
-            wingPosition.x = Mathf.Abs(_wingLocalPosition.x) * (flipX ? -1f : 1f);
-            wingRenderer.transform.localPosition = wingPosition;
+            _bodyVisual.ApplyFacing(flipX);
+            _wingVisual.ApplyVisualState(flipX, isWingOn);
+            _glideBar.ApplyVisualState(isWingOn, glideFillAmount);
 
             _lastFacingDirection = facingDirection;
             _lastIsWingOn = isWingOn;
+            _lastGlideFillAmount = glideFillAmount;
         }
     }
 }

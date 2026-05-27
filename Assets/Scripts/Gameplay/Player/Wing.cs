@@ -20,6 +20,8 @@ namespace Icarus.Gameplay.Player
         public float GlideFallGravityMultiplier => glideFallGravityMultiplier;
         public float GlideMaxFallSpeed => glideMaxFallSpeed;
 
+        public float GlideDurationNormalized => Mathf.Clamp01(_remainingGlideDuration / GetMaxGlideDurationSeconds());
+
         public event Action<bool> WingStateChanged;
 
         private void Awake()
