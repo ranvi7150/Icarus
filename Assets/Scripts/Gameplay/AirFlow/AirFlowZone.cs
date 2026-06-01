@@ -20,14 +20,15 @@ namespace Icarus.Gameplay.AirFlow
         [SerializeField] private bool startActivated = true;
         [SerializeField] private ActivateMode activateMode = ActivateMode.ToggleActivation;
 
-        // Prefab default flow is +X. Actual world flow comes from zone rotation.
-        public Vector2 AirFlowDirection => ((Vector2)transform.right).normalized;
+        // Prefab default flow is local +X. Reverse mode flips the flow sign without rotating the zone.
+        public Vector2 AirFlowDirection => ((Vector2)transform.right * _flowDirectionSign).normalized;
 
         private BoxCollider2D _airFlowCollider;
         private AirFlowZoneVisualizer _visualizer;
         private Vector2 _currentFlowVelocity;
         private bool _hasCurrentFlowVelocity;
         private bool _isActivated;
+        private float _flowDirectionSign = 1f;
 
         private void Awake()
         {
@@ -123,7 +124,8 @@ namespace Icarus.Gameplay.AirFlow
 
         private void ReverseFlowDirection()
         {
-            transform.Rotate(0f, 0f, 180f);
+            _flowDirectionSign *= -1f;
+            _visualizer.SetFlowDirection(_flowDirectionSign);
 
             if (_hasCurrentFlowVelocity)
             {

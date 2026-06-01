@@ -333,7 +333,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4723107735738678597, guid: 43eb8f995ce7e7c4a941846d6372e150, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -566,6 +566,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 208019105976636995}
     m_Modifications:
+    - target: {fileID: 2921340278039908902, guid: cbd171533394a334ba3b7bf2016d4ffd, type: 3}
+      propertyPath: m_SortingOrder
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 5552276546479944192, guid: cbd171533394a334ba3b7bf2016d4ffd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -615,11 +619,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbd171533394a334ba3b7bf2016d4ffd, type: 3}
---- !u!212 &178336676560412732 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 2921340278039908902, guid: cbd171533394a334ba3b7bf2016d4ffd, type: 3}
-  m_PrefabInstance: {fileID: 3094883075294933530}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6206037150605277301 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8994671600261843567, guid: cbd171533394a334ba3b7bf2016d4ffd, type: 3}
