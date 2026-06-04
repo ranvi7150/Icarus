@@ -34,12 +34,12 @@ namespace Icarus.Gameplay.Item
                 return;
             }
 
-            if (!TryGetPlayerStats(other, out PlayerStats playerStats))
+            if (!TryGetPlayerController(other, out PlayerController player))
             {
                 return;
             }
 
-            if (!playerStats.TryCollectFeather(_saveId))
+            if (!player.TryCollectFeather(_saveId))
             {
                 return;
             }
@@ -48,9 +48,9 @@ namespace Icarus.Gameplay.Item
             Destroy(gameObject);
         }
 
-        private static bool TryGetPlayerStats(Collider2D other, out PlayerStats playerStats)
+        private static bool TryGetPlayerController(Collider2D other, out PlayerController player)
         {
-            playerStats = null;
+            player = null;
 
             Rigidbody2D rb = other.attachedRigidbody;
             if (rb == null || !rb.CompareTag("Player"))
@@ -58,8 +58,8 @@ namespace Icarus.Gameplay.Item
                 return false;
             }
 
-            playerStats = rb.GetComponent<PlayerStats>();
-            return playerStats != null;
+            player = rb.GetComponent<PlayerController>();
+            return player != null;
         }
 
         private string BuildSaveId()

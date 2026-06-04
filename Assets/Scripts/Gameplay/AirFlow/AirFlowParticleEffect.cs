@@ -6,8 +6,8 @@ namespace Icarus.Gameplay.AirFlow
     [RequireComponent(typeof(ParticleSystem))]
     public class AirFlowParticleEffect : MonoBehaviour
     {
-        [SerializeField] private float referenceColliderWidth = 10f;
-        [SerializeField] private float referenceParticleDuration = 0.8f;
+        [SerializeField] private float referenceFlowLength = 10f;
+        [SerializeField] private float referenceFlowDuration = 0.8f;
 
         private const float MinimumParticleDuration = 0.01f;
         private ParticleSystem _particles;
@@ -37,60 +37,48 @@ namespace Icarus.Gameplay.AirFlow
             }
         }
 
-        private void SyncTimingToCollider(float colliderWidth)
+        private void SyncTimingToCollider(float flowLength)
         {
-            float widthScale = colliderWidth / Mathf.Max(referenceColliderWidth, 0.01f);
-            float particleDuration = Mathf.Max(
-                referenceParticleDuration * widthScale,
+            float lengthScale = flowLength / Mathf.Max(referenceFlowLength, 0.01f);
+            float flowDuration = Mathf.Max(
+                referenceFlowDuration * lengthScale,
                 MinimumParticleDuration);
-                
-            bool shouldRestart = Application.isPlaying
-                && gameObject.activeInHierarchy
-                && _particles.isPlaying;
 
-            if (!Application.isPlaying && _particles.isPlaying)
+            if (_particles.isPlaying)
             {
                 return;
             }
 
-            if (shouldRestart)
-            {
-                _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            }
-
             ParticleSystem.MainModule main = _particles.main;
-            main.duration = particleDuration;
-            main.startLifetime = particleDuration;
+            main.duration = flowDuration;
+            main.startLifetime = flowDuration;
 
             ParticleSystem.EmissionModule emission = _particles.emission;
             ParticleSystem.Burst[] bursts =
             {
                 new ParticleSystem.Burst(0f, 1),
-                new ParticleSystem.Burst(particleDuration * 0.5f, 1)
+                new ParticleSystem.Burst(flowDuration * 0.5f, 1)
             };
 
             emission.SetBursts(bursts);
-
-            if (shouldRestart)
-            {
-                _particles.Play(true);
-            }
         }
 
         public void SyncToCollider(Vector2 colliderSize)
         {
+            float flowLength = colliderSize.x;
+            float flowWidth = colliderSize.y;
             Vector3 particlePosition = transform.localPosition;
             transform.localPosition = new Vector3(
-                -colliderSize.x * 0.5f,
+                -flowLength * 0.5f,
                 0f,
                 particlePosition.z);
 
             ParticleSystem.MainModule main = _particles.main;
             main.startSize3D = true;
-            main.startSizeY = colliderSize.y;
+            main.startSizeY = flowWidth;
             main.startSizeZ = 1f;
 
-            SyncTimingToCollider(colliderSize.x);
+            SyncTimingToCollider(flowLength);
         }
 
         public void SetActivated(bool isActivated)

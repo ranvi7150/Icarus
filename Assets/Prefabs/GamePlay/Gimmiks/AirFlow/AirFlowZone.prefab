@@ -135,7 +135,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1711177283328279935}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -228,7 +228,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5142,8 +5142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f40f8d918610674baae3f7789647d8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  referenceColliderWidth: 10
-  referenceParticleDuration: 0.8
+  referenceFlowLength: 10
+  referenceFlowDuration: 0.8
 --- !u!1 &5710654950705002554
 GameObject:
   m_ObjectHideFlags: 0

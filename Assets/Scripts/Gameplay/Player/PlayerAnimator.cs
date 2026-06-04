@@ -5,6 +5,7 @@ namespace Icarus.Gameplay.Player
     public class PlayerAnimator : MonoBehaviour
     {
         [SerializeField] private PlayerController playerController;
+        [SerializeField] private PlayerInteractor playerInteractor;
         [SerializeField] private Animator bodyAnimator;
         [SerializeField] private string idleStateName = "Idle";
         [SerializeField] private string runStateName = "Run";
@@ -33,6 +34,13 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
+            if (playerInteractor == null)
+            {
+                Debug.LogError("PlayerAnimator requires a PlayerInteractor component in Parent.", this);
+                enabled = false;
+                return;
+            }
+
             if (bodyAnimator == null)
             {
                 Debug.LogError("PlayerAnimator requires a Body Animator reference.", this);
@@ -50,14 +58,14 @@ namespace Icarus.Gameplay.Player
 
         private void OnEnable()
         {
-            playerController.Interacted += PlayInteraction;
+            playerInteractor.Interacted += PlayInteraction;
             playerController.Died += PlayDeath;
             playerController.Respawned += PlayRespawn;
         }
 
         private void OnDisable()
         {
-            playerController.Interacted -= PlayInteraction;
+            playerInteractor.Interacted -= PlayInteraction;
             playerController.Died -= PlayDeath;
             playerController.Respawned -= PlayRespawn;
         }
