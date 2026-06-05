@@ -119,6 +119,84 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &60108708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 60108709}
+  - component: {fileID: 60108710}
+  m_Layer: 0
+  m_Name: CameraBoundary
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &60108709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60108708}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2022185768}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &60108710
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60108708}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 19.5, y: 14}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 69, y: 34}
+  m_EdgeRadius: 0
 --- !u!4 &187901344 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7392813846403623774, guid: 960751c3d17bda5489be6f9ce8b26eea, type: 3}
@@ -762,7 +840,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 78979995449920976, guid: 08e92e2bdd6c4244f96a1b239756069e, type: 3}
       propertyPath: m_Name
-      value: Door
+      value: Door01
       objectReference: {fileID: 0}
     - target: {fileID: 95335322905681709, guid: 08e92e2bdd6c4244f96a1b239756069e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -804,6 +882,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4562320807731755316, guid: 08e92e2bdd6c4244f96a1b239756069e, type: 3}
+      propertyPath: focusTarget
+      value: 
+      objectReference: {fileID: 940948475}
+    - target: {fileID: 4562320807731755316, guid: 08e92e2bdd6c4244f96a1b239756069e, type: 3}
+      propertyPath: cameraFocusController
+      value: 
+      objectReference: {fileID: 2701713474451326926}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -971,6 +1057,31 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8083385960137091848, guid: c8000e315805e634e8bc8fbd407e39c6, type: 3}
   m_PrefabInstance: {fileID: 8089421985226777916}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1522381460 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1965779704254950484, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
+  m_PrefabInstance: {fileID: 2701713474451326925}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1522381462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522381460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineConfiner2D
+  BoundingShape2D: {fileID: 60108710}
+  Damping: 0.5
+  SlowingDistance: 5
+  OversizeWindow:
+    Enabled: 0
+    MaxWindowSize: 0
+    Padding: 0
+  m_LegacyMaxWindowSize: -2
 --- !u!1001 &1560498183
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1328,22 +1439,6 @@ Transform:
   - {fileID: 1587854040}
   m_Father: {fileID: 205557559}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1636331339 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6343747421635363994, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-  m_PrefabInstance: {fileID: 1789122697892546168}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8df33e2c3b0249f3a2b84a10cbd08ef6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Camera.CameraFocusCue
---- !u!4 &1636331340 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-  m_PrefabInstance: {fileID: 1789122697892546168}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1650135449
 GameObject:
   m_ObjectHideFlags: 0
@@ -1378,38 +1473,17 @@ Transform:
   - {fileID: 234747031}
   m_Father: {fileID: 205557559}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1676154882
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!114 &1698345513 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4562320807731755316, guid: 08e92e2bdd6c4244f96a1b239756069e, type: 3}
+  m_PrefabInstance: {fileID: 940948472}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1676154883}
-  m_Layer: 0
-  m_Name: CameraFocusCue
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1676154883
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1676154882}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.239, y: -0.120000005, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1636331340}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8df33e2c3b0249f3a2b84a10cbd08ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Camera.CameraFocusTrigger
 --- !u!4 &1721575296 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1213312010606892063, guid: 60dedce8fe262634faf8939fa634e094, type: 3}
@@ -1438,7 +1512,7 @@ PrefabInstance:
     - target: {fileID: 393013941527259204, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
       propertyPath: activationTargets.Array.data[1].targetObject
       value: 
-      objectReference: {fileID: 1636331339}
+      objectReference: {fileID: 1698345513}
     - target: {fileID: 2301164007322170941, guid: cf36ab09939d35e40a29c214d77d46ad, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.53
@@ -1687,6 +1761,7 @@ Transform:
   - {fileID: 1721575296}
   - {fileID: 187901344}
   - {fileID: 1450131529}
+  - {fileID: 60108709}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2041674943 stripped
@@ -1694,71 +1769,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8719197936504522148, guid: b9d8dbcfa23735f498f901c33b8444ad, type: 3}
   m_PrefabInstance: {fileID: 1002542373}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1789122697892546168
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1676154883}
-    m_Modifications:
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2.61545
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 25.700392
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 839853835403140887, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6343747421635363994, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: focusTarget
-      value: 
-      objectReference: {fileID: 940948475}
-    - target: {fileID: 6343747421635363994, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: cameraFocusController
-      value: 
-      objectReference: {fileID: 2701713474451326926}
-    - target: {fileID: 6937036958919436689, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
-      propertyPath: m_Name
-      value: CameraFocusTarget
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a0964c1c4bf454a4ba98e03790e67d9f, type: 3}
 --- !u!1001 &2701713474451326925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1774,10 +1784,6 @@ PrefabInstance:
     - target: {fileID: 2252444389832578269, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_Name
       value: Cameras
-      objectReference: {fileID: 0}
-    - target: {fileID: 4417824556874052790, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
-      propertyPath: Lens.OrthographicSize
-      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 4769921757828955573, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1825,15 +1831,15 @@ PrefabInstance:
       objectReference: {fileID: 427272945}
     - target: {fileID: 7756592921797019037, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -14.63092
+      value: -9.860924
       objectReference: {fileID: 0}
     - target: {fileID: 7756592921797019037, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.39044
+      value: 1.2721517
       objectReference: {fileID: 0}
     - target: {fileID: 7756592921797019037, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -9.750611
       objectReference: {fileID: 0}
     - target: {fileID: 7756592921797019037, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1854,7 +1860,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 23518088838073720, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2701713474451326928}
+    - targetCorrespondingSourceObject: {fileID: 1965779704254950484, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1522381462}
   m_SourcePrefab: {fileID: 100100000, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
 --- !u!114 &2701713474451326926 stripped
 MonoBehaviour:
@@ -1867,6 +1879,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58bab78a5b1597941bef0ea4ccae6946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icarus.Gameplay.Camera.CameraFocusController
+--- !u!1 &2701713474451326927 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 23518088838073720, guid: 5e6a255595188ae43bc722b7f4c1303a, type: 3}
+  m_PrefabInstance: {fileID: 2701713474451326925}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2701713474451326928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2701713474451326927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineConfiner2D
+  BoundingShape2D: {fileID: 60108710}
+  Damping: 0.5
+  SlowingDistance: 5
+  OversizeWindow:
+    Enabled: 0
+    MaxWindowSize: 0
+    Padding: 0
+  m_LegacyMaxWindowSize: -2
 --- !u!1001 &3758896001425505136
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27454,7 +27491,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 7260758066177495566}
-  - {fileID: 1676154883}
   - {fileID: 2701713474451326925}
   - {fileID: 4220581889786037743}
   - {fileID: 2022185768}
