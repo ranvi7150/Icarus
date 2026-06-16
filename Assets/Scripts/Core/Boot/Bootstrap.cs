@@ -1,4 +1,5 @@
 using Icarus.Core.Saving;
+using Icarus.Core.Settings;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,10 @@ namespace Icarus.Core.Boot
         
         private void Start()
         {
+            GameSettings settings = SettingsManager.Load();
+            GameSettingsState.Initialize(settings);
+            SettingsManager.Apply(GameSettingsState.CurrentSettings);
+
             SaveData saveData = SaveManager.Load();
             GameProgressState.Initialize(saveData);
 

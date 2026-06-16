@@ -7,15 +7,27 @@ namespace Icarus.UI
     public class MainMenuController : MonoBehaviour
     {
         [SerializeField] private string startStageName = "Stage_01";
+        [SerializeField] private OptionsPanel optionsPanel;
 
-        public void StartNewGame()
+        private void Awake()
         {
             if (string.IsNullOrWhiteSpace(startStageName))
             {
                 Debug.LogError("MainMenuController requires a Start Stage Name.", this);
+                enabled = false;
                 return;
             }
 
+            if (optionsPanel == null)
+            {
+                Debug.LogError("MainMenuController requires an Options Panel reference.", this);
+                enabled = false;
+                return;
+            }
+        }
+
+        public void StartNewGame()
+        {
             GameProgressState.Initialize(new SaveData());
 
             GameProgressState.SetCurrentStage(startStageName);
@@ -25,7 +37,7 @@ namespace Icarus.UI
 
         public void LoadGame()
         {
-            EnsureProgressInitialized();
+            SaveManager.EnsureLoaded();
 
             string currentStage = GameProgressState.CurrentSaveData.currentStage;
             if (string.IsNullOrWhiteSpace(currentStage))
@@ -43,13 +55,19 @@ namespace Icarus.UI
             SceneManager.LoadScene(currentStage);
         }
 
-        private static void EnsureProgressInitialized()
+        public void OpenOptions()
         {
-            // Allows direct main menu play in the editor without entering through Boot.
-            if (!GameProgressState.IsInitialized)
-            {
-                GameProgressState.Initialize(SaveManager.Load());
-            }
+            optionsPanel.Open();
         }
+
+        public void QuitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
     }
 }

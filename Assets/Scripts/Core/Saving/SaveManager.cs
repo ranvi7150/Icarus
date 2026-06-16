@@ -76,5 +76,16 @@ namespace Icarus.Core.Saving
         {
             return Path.Combine(Application.persistentDataPath, SaveFileName + SaveExtension);
         }
+
+        public static void EnsureLoaded()
+        {
+            // Allows direct main menu play in the editor without entering through Boot.
+            if (GameProgressState.IsInitialized)
+            {
+                return;
+            }
+
+            GameProgressState.Initialize(Load());
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Icarus.Core.Audio;
 using Icarus.Core.SceneManagement;
 using Icarus.Gameplay.Player;
 using Icarus.Gameplay.World;
@@ -107,6 +108,7 @@ namespace Icarus.Editor.Validation
             ValidateSingleComponent<PlayerController>(scene, "PlayerController");
             ValidateSingleComponent<StageSpawnController>(scene, "StageSpawnController");
             ValidateSingleComponent<StageTransitionController>(scene, "StageTransitionController");
+            ValidateSingleComponent<SoundManager>(scene, "SoundManager");
             ValidateSingleRootGameObject(scene, "HUD");
             ValidateAtLeastOneComponent<Portal>(scene, "Portal");
             ValidateSceneInBuildSettings(scene);
