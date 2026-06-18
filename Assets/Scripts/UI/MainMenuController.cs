@@ -1,6 +1,6 @@
 using Icarus.Core.Saving;
+using Icarus.Core.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Icarus.UI
 {
@@ -32,7 +32,7 @@ namespace Icarus.UI
 
             GameProgressState.SetCurrentStage(startStageName);
             SaveManager.Save(GameProgressState.CurrentSaveData);
-            SceneManager.LoadScene(startStageName);
+            ScreenFadeTransition.LoadScene(startStageName);
         }
 
         public void LoadGame()
@@ -52,7 +52,7 @@ namespace Icarus.UI
                 return;
             }
 
-            SceneManager.LoadScene(currentStage);
+            ScreenFadeTransition.LoadScene(currentStage);
         }
 
         public void OpenOptions()
