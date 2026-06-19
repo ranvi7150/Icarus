@@ -38,6 +38,21 @@ namespace Icarus.Core.Saving
             CurrentSaveData.featherCount = Mathf.Max(0, featherCount);
         }
 
+        public static void SetDoorOpen(string doorId, bool isOpen)
+        {
+            if (isOpen)
+            {
+                if (!HasOpenedDoor(doorId))
+                {
+                    CurrentSaveData.openedDoorIds.Add(doorId);
+                }
+
+                return;
+            }
+
+            CurrentSaveData.openedDoorIds.Remove(doorId);
+        }
+
         public static bool HasCollectedFeather(string featherId)
         {
             if (string.IsNullOrWhiteSpace(featherId))
@@ -60,6 +75,16 @@ namespace Icarus.Core.Saving
             return true;
         }
 
+        public static bool HasOpenedDoor(string doorId)
+        {
+            if (string.IsNullOrWhiteSpace(doorId))
+            {
+                return false;
+            }
+
+            return CurrentSaveData.openedDoorIds.Contains(doorId);
+        }
+
         private static void EnsureInitialized()
         {
             if (_currentSaveData != null)
@@ -75,6 +100,7 @@ namespace Icarus.Core.Saving
             _currentSaveData.currentStage ??= string.Empty;
             _currentSaveData.featherCount = Mathf.Max(0, _currentSaveData.featherCount);
             _currentSaveData.collectedFeatherIds ??= new System.Collections.Generic.List<string>();
+            _currentSaveData.openedDoorIds ??= new System.Collections.Generic.List<string>();
         }
     }
 }

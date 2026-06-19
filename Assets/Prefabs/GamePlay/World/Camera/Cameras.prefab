@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1245404814017046045}
   - component: {fileID: 7579279147119219946}
   - component: {fileID: 1442539451550801326}
-  - component: {fileID: 4262044603497016172}
+  - component: {fileID: 8996122230065288764}
   m_Layer: 0
   m_Name: Follow Camera
   m_TagString: Untagged
@@ -96,7 +96,7 @@ MonoBehaviour:
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   FollowOffset: {x: 0, y: 3.5, z: -10}
---- !u!114 &4262044603497016172
+--- !u!114 &8996122230065288764
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,8 +144,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1226088797280436685}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.139084, y: 20.80956, z: -20}
+  m_LocalRotation: {x: 0.07437623, y: 0.0000000037149728, z: -2.7707311e-10, w: 0.9972303}
+  m_LocalPosition: {x: -9.805365, y: 1.2721517, z: -9.750611}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -296,7 +296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1638299635355013939}
   - component: {fileID: 4417824556874052790}
-  - component: {fileID: 3076806722441055391}
+  - component: {fileID: 7029899616931882316}
   m_Layer: 0
   m_Name: Door Focus Camera
   m_TagString: Untagged
@@ -362,7 +362,7 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
---- !u!114 &3076806722441055391
+--- !u!114 &7029899616931882316
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

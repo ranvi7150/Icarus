@@ -9,5 +9,6 @@ namespace Icarus.Core.Saving
         public string currentStage = string.Empty;
         public int featherCount;
         public List<string> collectedFeatherIds = new List<string>();
+        public List<string> openedDoorIds = new List<string>();
     }
 }
