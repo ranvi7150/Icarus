@@ -41,10 +41,8 @@ namespace Icarus.Core.Audio
         {
             SettingsManager.SettingsApplied += ApplySettings;
 
-            if (GameSettingsState.IsInitialized)
-            {
-                ApplySettings(GameSettingsState.CurrentSettings);
-            }
+            SettingsManager.EnsureLoaded();
+            SettingsManager.Apply(GameSettingsState.CurrentSettings);
         }
 
         private void OnDisable()

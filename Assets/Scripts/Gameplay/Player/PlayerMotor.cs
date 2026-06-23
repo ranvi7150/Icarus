@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Icarus.Gameplay.Player
@@ -55,6 +56,8 @@ namespace Icarus.Gameplay.Player
         public Vector2 Velocity => _rb.linearVelocity;
         public int FacingDirection => _facingDirection;
         public bool IsGrounded => _groundSensor.IsGrounded();
+
+        public event Action Jumped;
 
         // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
         // totalTargetVelocity = _motorVelocity + airFlow
@@ -267,6 +270,7 @@ namespace Icarus.Gameplay.Player
             ResetJumpState(clearJumpHold: false, clearCoyoteTimer: true);
 
             _motorVelocity.y = jumpForce;
+            Jumped?.Invoke();
         }
 
         private void ApplyGravity(bool isGrounded)
