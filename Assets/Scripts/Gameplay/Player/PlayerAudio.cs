@@ -29,7 +29,7 @@ namespace Icarus.Gameplay.Player
         {
             if (_playerMotor != null)
             {
-                _playerMotor.Jumped += PlayJump;
+                _playerMotor.JumpStarted += PlayJump;
             }
         }
 
@@ -37,7 +37,7 @@ namespace Icarus.Gameplay.Player
         {
             if (_playerMotor != null)
             {
-                _playerMotor.Jumped -= PlayJump;
+                _playerMotor.JumpStarted -= PlayJump;
             }
         }
 

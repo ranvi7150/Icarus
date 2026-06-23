@@ -374,6 +374,10 @@ PrefabInstance:
       propertyPath: startFeatherCount
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 7281307629143058862, guid: 3881e11b3fcd08b4eab9000be2bc8f9e, type: 3}
+      propertyPath: jumpClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26884,8 +26888,193 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4064777046055920833, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1438731360}
+    - targetCorrespondingSourceObject: {fileID: 1579026040180062158, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1438731359}
+    - targetCorrespondingSourceObject: {fileID: 2355583253195169733, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1438731358}
+    - targetCorrespondingSourceObject: {fileID: 3590960258035978731, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1438731357}
+    - targetCorrespondingSourceObject: {fileID: 6952323984266731545, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1438731356}
   m_SourcePrefab: {fileID: 100100000, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+--- !u!1 &1438731351 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6952323984266731545, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+  m_PrefabInstance: {fileID: 1438731350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1438731352 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3590960258035978731, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+  m_PrefabInstance: {fileID: 1438731350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1438731353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2355583253195169733, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+  m_PrefabInstance: {fileID: 1438731350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1438731354 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1579026040180062158, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+  m_PrefabInstance: {fileID: 1438731350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1438731355 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4064777046055920833, guid: b1ca693cf9a759742a65840392eced52, type: 3}
+  m_PrefabInstance: {fileID: 1438731350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1438731356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438731351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2032865900}
+          m_TargetAssemblyTypeName: Icarus.Core.Audio.SoundManager, Assembly-CSharp
+          m_MethodName: PlayButtonClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1438731357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438731352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2032865900}
+          m_TargetAssemblyTypeName: Icarus.Core.Audio.SoundManager, Assembly-CSharp
+          m_MethodName: PlayButtonClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1438731358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438731353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2032865900}
+          m_TargetAssemblyTypeName: Icarus.Core.Audio.SoundManager, Assembly-CSharp
+          m_MethodName: PlayButtonClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1438731359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438731354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2032865900}
+          m_TargetAssemblyTypeName: Icarus.Core.Audio.SoundManager, Assembly-CSharp
+          m_MethodName: PlayButtonClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1438731360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438731355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2032865900}
+          m_TargetAssemblyTypeName: Icarus.Core.Audio.SoundManager, Assembly-CSharp
+          m_MethodName: PlayButtonClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1445271069
 GameObject:
   m_ObjectHideFlags: 0

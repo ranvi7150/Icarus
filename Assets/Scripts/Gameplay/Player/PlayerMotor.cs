@@ -39,6 +39,7 @@ namespace Icarus.Gameplay.Player
         private float _coyoteTimer;
         private float _jumpBufferTimer;
         private bool _jumpHeld;
+        private bool _jumpFeedbackPlayedForCurrentRequest;
 
         private Vector2 _moveInput;
         private int _facingDirection = 1;
@@ -57,7 +58,7 @@ namespace Icarus.Gameplay.Player
         public int FacingDirection => _facingDirection;
         public bool IsGrounded => _groundSensor.IsGrounded();
 
-        public event Action Jumped;
+        public event Action JumpStarted;
 
         // _motorVelocity = Player Motor(Move, Jump, Dash, Gravity) Target Velocity
         // totalTargetVelocity = _motorVelocity + airFlow
@@ -138,6 +139,10 @@ namespace Icarus.Gameplay.Player
             if (_jumpBufferTimer > 0f)
             {
                 _jumpBufferTimer -= Time.deltaTime;
+                if (_jumpBufferTimer <= 0f)
+                {
+                    _jumpFeedbackPlayedForCurrentRequest = false;
+                }
             }
         }
 
@@ -267,10 +272,14 @@ namespace Icarus.Gameplay.Player
                 return;
             }
 
+            bool jumpFeedbackAlreadyPlayed = _jumpFeedbackPlayedForCurrentRequest;
             ResetJumpState(clearJumpHold: false, clearCoyoteTimer: true);
 
             _motorVelocity.y = jumpForce;
-            Jumped?.Invoke();
+            if (!jumpFeedbackAlreadyPlayed)
+            {
+                JumpStarted?.Invoke();
+            }
         }
 
         private void ApplyGravity(bool isGrounded)
@@ -373,6 +382,11 @@ namespace Icarus.Gameplay.Player
         {
             _jumpHeld = true;
             _jumpBufferTimer = jumpBufferTime;
+
+            if (CanPlayJumpFeedbackImmediately())
+            {
+                PlayJumpFeedbackIfNeeded();
+            }
         }
 
         public void ReleaseJump()
@@ -421,6 +435,7 @@ namespace Icarus.Gameplay.Player
         private void ResetJumpState(bool clearJumpHold, bool clearCoyoteTimer)
         {
             _jumpBufferTimer = 0f;
+            _jumpFeedbackPlayedForCurrentRequest = false;
 
             if (clearJumpHold)
             {
@@ -446,6 +461,26 @@ namespace Icarus.Gameplay.Player
             {
                 _motorVelocity = _rb.linearVelocity;
             }
+        }
+
+        private bool CanPlayJumpFeedbackImmediately()
+        {
+            return _jumpBufferTimer > 0f
+                   && _coyoteTimer > 0f
+                   && !_isDashing
+                   && !_dashRequested
+                   && !_airFlow.IsInAirFlow;
+        }
+
+        private void PlayJumpFeedbackIfNeeded()
+        {
+            if (_jumpFeedbackPlayedForCurrentRequest)
+            {
+                return;
+            }
+
+            _jumpFeedbackPlayedForCurrentRequest = true;
+            JumpStarted?.Invoke();
         }
     }
 }
