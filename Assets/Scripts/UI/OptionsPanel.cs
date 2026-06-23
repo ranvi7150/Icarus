@@ -7,6 +7,9 @@ namespace Icarus.UI
 {
     public class OptionsPanel : MonoBehaviour
     {
+        private const int WindowedScreenWidth = 1280;
+        private const int WindowedScreenHeight = 720;
+
         [Header("Controls")]
         [SerializeField] private Slider masterVolumeSlider;
         [SerializeField] private Slider bgmVolumeSlider;
@@ -108,6 +111,18 @@ namespace Icarus.UI
             settings.bgmVolume = bgmVolumeSlider.value;
             settings.sfxVolume = sfxVolumeSlider.value;
             settings.fullscreen = fullscreenToggle.isOn;
+
+            if (settings.fullscreen)
+            {
+                settings.screenWidth = 0;
+                settings.screenHeight = 0;
+            }
+            else
+            {
+                settings.screenWidth = WindowedScreenWidth;
+                settings.screenHeight = WindowedScreenHeight;
+            }
+
             return settings;
         }
 

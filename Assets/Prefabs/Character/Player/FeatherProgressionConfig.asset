@@ -15,6 +15,5 @@ MonoBehaviour:
   dashUnlockFeathers: 1
   wingToggleUnlockFeathers: 3
   glideDurationUpgradeFeathers: 5
-  doubleJumpUnlockFeathers: 7
   baseGlideDurationSeconds: 1
-  upgradedGlideDurationSeconds: 3
+  upgradedGlideDurationSeconds: 50
