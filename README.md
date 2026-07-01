@@ -72,7 +72,7 @@ motorVelocity (플레이어의 조작, 상태를 통해 계산된 목표 속도)
 + airFlowVelocity (기류 안에서 적용되는 목표 속도)
 + carryVelocity (기류 이탈 후 남는 관성 속도)
 -> targetVelocity (최종 목표 속도)
--> deltaVelocity (targetVelocity - _rb.linearVelocity, 최종 목표 속도와 현재 속도의 차이)
+-> deltaVelocity ($$\Delta v = v_{target} - v_{current\_linear}$$, 최종 목표 속도와 현재 속도의 차이)
 -> Rigidbody2D.AddForce(..., ForceMode2D.Impulse)
 ```
 
